@@ -14,8 +14,8 @@ import { useRouter } from 'next/router';
 
 
 const LoginComponent = () => {
+    const { setUser } = UserAuth()
 
-    const { user, setUser } = UserAuth()
     // call googleSignIn
     const { googleSignIn, facebookSiginIn } = UserAuth()
 

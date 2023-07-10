@@ -7,7 +7,7 @@ export default function Home() {
 
   const handleSignOut = async () => {
     try {
-      await logOut();
+      logOut();
       setUser(null);
       localStorage.removeItem('credential');
     } catch (error) {

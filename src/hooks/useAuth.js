@@ -7,7 +7,6 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth } from '@/firebase';
-import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
@@ -28,9 +27,23 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   // loguut
-  const logOut = () => {
-    signOut(auth);
+  const logOut = async () => {
+    return signOut(auth);
   };
+
+  //onAuthStateChanged
+  useEffect(() => {
+    const unsubcribe = onAuthStateChanged(auth, (credential) => {
+      if (user) {
+        setUser(credential);
+      } else {
+        setUser(null);
+      }
+    });
+    return () => {
+      unsubcribe();
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ facebookSiginIn, googleSignIn, logOut, user, setUser }}>
