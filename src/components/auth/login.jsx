@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Video from '../base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
@@ -11,14 +11,15 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { UserAuth } from '@/hooks/useAuth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
+import { doc, setDoc } from 'firebase/firestore';
 
 
 const LoginComponent = () => {
-    //router 
-    const router = useRouter()
-
     // call googleSignIn
-    const { googleSignIn, facebookSiginIn } = UserAuth()
+    const { googleSignIn, facebookSiginIn, user } = UserAuth()
+
+    // router
+    const router = useRouter()
 
     //state of type password
     const [passwordType, setPasswordType] = useState("password")
@@ -55,7 +56,6 @@ const LoginComponent = () => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
-                router.push("/")
             })
             .catch((error) => {
                 console.log(error);
@@ -79,6 +79,15 @@ const LoginComponent = () => {
             console.log(error);
         }
     }
+
+    useEffect(() => {
+        if (user?.displayName) {
+            router.push("/")
+        }
+        else if (user?.email) {
+            router.push("/")
+        }
+    }, [user])
 
     return (
         <>

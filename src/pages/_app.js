@@ -6,14 +6,14 @@ export default function App({ Component, pageProps }) {
   if (Component.getLayout) {
     return Component.getLayout(
       <AuthContextProvider>
-        <Component {...pageProps} />,
+        <Component {...pageProps} />
       </AuthContextProvider>,
     );
   }
   return (
     <Layout>
       <AuthContextProvider>
-        <Component {...pageProps} />,
+        <Component {...pageProps} />
       </AuthContextProvider>
     </Layout>
   );

@@ -13,6 +13,18 @@ import { auth, db } from '@/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 
+// array images
+const images = [
+    "/assest/images/avatar-one.webp",
+    "/assest/images/avatar-two.jpg",
+    "/assest/images/avatar-three.jpg",
+    "/assest/images/avatar-four.jpg",
+    "/assest/images/avatar-five.jpg",
+    "/assest/images/avatar-six.jpg",
+    "/assest/images/avatar-seven.jpg",
+    "/assest/images/avatar-eight.jpg"
+]
+
 const RegisterComponent = () => {
     // router
     const router = useRouter()
@@ -54,16 +66,13 @@ const RegisterComponent = () => {
     // onSubmit form
     const onSubmit = (data, e) => {
         e.preventDefault()
-        // userCredential.user.reloadUserInfo.passwordHash
         createUserWithEmailAndPassword(auth, data.email, data.password)
             .then(() => {
                 addDoc(collection(db, "user"), {
-                    firstname: data.firstname,
-                    lastname: data.lastname,
+                    displayName: data.firstname,
                     email: data.email,
-                    password: data.password
+                    avatar: images[Math.floor(Math.random() * images.length)]
                 })
-                router.push("/login")
             })
             .catch((error) => {
                 console.log(error);
