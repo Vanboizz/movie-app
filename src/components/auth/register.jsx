@@ -10,20 +10,9 @@ import * as yup from "yup"
 import { useForm } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
-
-// array images
-const images = [
-    "/assest/images/avatar-one.webp",
-    "/assest/images/avatar-two.jpg",
-    "/assest/images/avatar-three.jpg",
-    "/assest/images/avatar-four.jpg",
-    "/assest/images/avatar-five.jpg",
-    "/assest/images/avatar-six.jpg",
-    "/assest/images/avatar-seven.jpg",
-    "/assest/images/avatar-eight.jpg"
-]
+import { renderAvatar } from '@/helpers';
 
 const RegisterComponent = () => {
     // router
@@ -67,12 +56,13 @@ const RegisterComponent = () => {
     const onSubmit = (data, e) => {
         e.preventDefault()
         createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then(() => {
-                addDoc(collection(db, "user"), {
+            .then((credential) => {
+                setDoc(doc(db, "user", credential?.user.uid), {
                     displayName: data.firstname,
                     email: data.email,
-                    avatar: images[Math.floor(Math.random() * images.length)]
+                    avatar: renderAvatar()
                 })
+                router.push("/login")
             })
             .catch((error) => {
                 console.log(error);

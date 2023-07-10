@@ -11,12 +11,13 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { UserAuth } from '@/hooks/useAuth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
-import { doc, setDoc } from 'firebase/firestore';
 
 
 const LoginComponent = () => {
+
+    const { user, setUser } = UserAuth()
     // call googleSignIn
-    const { googleSignIn, facebookSiginIn, user } = UserAuth()
+    const { googleSignIn, facebookSiginIn } = UserAuth()
 
     // router
     const router = useRouter()
@@ -55,7 +56,10 @@ const LoginComponent = () => {
     const onSubmit = (data, e) => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
-            .then(() => {
+            .then((credential) => {
+                setUser(credential.user)
+                localStorage.setItem("credential", JSON.stringify(credential.user))
+                router.push('/')
             })
             .catch((error) => {
                 console.log(error);
@@ -65,7 +69,11 @@ const LoginComponent = () => {
     // handleFacebookLogin
     const handleFacebookLogin = async () => {
         try {
-            await facebookSiginIn()
+            facebookSiginIn().then((credential) => {
+                setUser(credential.user)
+                localStorage.setItem("credential", JSON.stringify(credential.user))
+                router.push('/')
+            })
         } catch (error) {
             console.log(error);
         }
@@ -73,21 +81,15 @@ const LoginComponent = () => {
 
     // handleGoogleLogin
     const handleGoogleLogin = async () => {
-        try {
-            await googleSignIn()
-        } catch (error) {
-            console.log(error);
-        }
+        googleSignIn().then((credential) => {
+            setUser(credential.user)
+            localStorage.setItem("credential", JSON.stringify(credential.user))
+            router.push('/')
+        })
+            .catch((error) => {
+                console.log(error)
+            })
     }
-
-    useEffect(() => {
-        if (user?.displayName) {
-            router.push("/")
-        }
-        else if (user?.email) {
-            router.push("/")
-        }
-    }, [user])
 
     return (
         <>
