@@ -10,8 +10,9 @@ import * as yup from "yup"
 import { useForm } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
+import { renderAvatar } from '@/helpers';
 
 const RegisterComponent = () => {
     // router
@@ -54,14 +55,12 @@ const RegisterComponent = () => {
     // onSubmit form
     const onSubmit = (data, e) => {
         e.preventDefault()
-        // userCredential.user.reloadUserInfo.passwordHash
         createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then(() => {
-                addDoc(collection(db, "user"), {
-                    firstname: data.firstname,
-                    lastname: data.lastname,
+            .then((credential) => {
+                setDoc(doc(db, "user", credential?.user.uid), {
+                    displayName: data.firstname,
                     email: data.email,
-                    password: data.password
+                    avatar: renderAvatar()
                 })
                 router.push("/login")
             })

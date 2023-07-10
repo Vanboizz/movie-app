@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Video from '../base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
@@ -14,11 +14,13 @@ import { useRouter } from 'next/router';
 
 
 const LoginComponent = () => {
-    //router 
-    const router = useRouter()
 
+    const { user, setUser } = UserAuth()
     // call googleSignIn
     const { googleSignIn, facebookSiginIn } = UserAuth()
+
+    // router
+    const router = useRouter()
 
     //state of type password
     const [passwordType, setPasswordType] = useState("password")
@@ -54,8 +56,10 @@ const LoginComponent = () => {
     const onSubmit = (data, e) => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
-            .then(() => {
-                router.push("/")
+            .then((credential) => {
+                setUser(credential.user)
+                localStorage.setItem("credential", JSON.stringify(credential.user))
+                router.push('/')
             })
             .catch((error) => {
                 console.log(error);
@@ -65,7 +69,11 @@ const LoginComponent = () => {
     // handleFacebookLogin
     const handleFacebookLogin = async () => {
         try {
-            await facebookSiginIn()
+            facebookSiginIn().then((credential) => {
+                setUser(credential.user)
+                localStorage.setItem("credential", JSON.stringify(credential.user))
+                router.push('/')
+            })
         } catch (error) {
             console.log(error);
         }
@@ -73,11 +81,14 @@ const LoginComponent = () => {
 
     // handleGoogleLogin
     const handleGoogleLogin = async () => {
-        try {
-            await googleSignIn()
-        } catch (error) {
-            console.log(error);
-        }
+        googleSignIn().then((credential) => {
+            setUser(credential.user)
+            localStorage.setItem("credential", JSON.stringify(credential.user))
+            router.push('/')
+        })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     return (

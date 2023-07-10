@@ -7,6 +7,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth } from '@/firebase';
+import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
@@ -14,19 +15,16 @@ export const AuthContextProvider = ({ children }) => {
   // state of user
   const [user, setUser] = useState({});
 
-  // state of loading
-  const [loading, setLoading] = useState(true);
-
   // sign in google
-  const googleSignIn = () => {
+  const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+    return signInWithPopup(auth, provider);
   };
 
   // sign in facebook
-  const facebookSiginIn = () => {
+  const facebookSiginIn = async () => {
     const provider = new FacebookAuthProvider();
-    signInWithPopup(auth, provider);
+    return signInWithPopup(auth, provider);
   };
 
   // loguut
@@ -34,25 +32,8 @@ export const AuthContextProvider = ({ children }) => {
     signOut(auth);
   };
 
-  useEffect(() => {
-    // dimount
-    const unsubcribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        setLoading(false);
-      } else {
-        setUser(null);
-        setLoading(true);
-      }
-    });
-    // willunmout
-    return () => {
-      unsubcribe();
-    };
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ facebookSiginIn, googleSignIn, logOut, user }}>
+    <AuthContext.Provider value={{ facebookSiginIn, googleSignIn, logOut, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
