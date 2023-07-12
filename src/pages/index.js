@@ -5,6 +5,7 @@ export default function Home() {
   // logout
   const { user, setUser, logOut } = UserAuth();
 
+  // sign out
   const handleSignOut = async () => {
     try {
       logOut();

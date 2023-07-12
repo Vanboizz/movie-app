@@ -1,22 +1,25 @@
 import React, { useState } from 'react'
-import Video from '../base/video'
+import Video from '@/components/base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 import { BiUserCircle } from "react-icons/bi"
 import Link from "next/link"
 import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
 import { useForm } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { renderAvatar } from '@/helpers';
+import { appRouter, schemaRegister } from '@/constants';
 
 const RegisterComponent = () => {
     // router
     const router = useRouter()
+
+    // link
+    const link = appRouter
 
     //state of type password
     const [passwordType, setPasswordType] = useState("password")
@@ -29,17 +32,9 @@ const RegisterComponent = () => {
         passwordInput: "",
     })
 
-    // schema
-    const schema = yup.object().shape({
-        firstname: yup.string().required("First name is required"),
-        lastname: yup.string().required("Last name is required"),
-        email: yup.string().email("Email is not valid").required("Email is required"),
-        password: yup.string().required('Password is required').min(8, "Your password is too short"),
-    })
-
-    // useForm
+    // react hook form combine with with yup
     const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schemaRegister)
     })
 
     // togglePassword
@@ -62,7 +57,7 @@ const RegisterComponent = () => {
                     email: data.email,
                     avatar: renderAvatar()
                 })
-                router.push("/login")
+                router.push(link.login)
             })
             .catch((error) => {
                 console.log(error);
