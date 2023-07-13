@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { appRouter, schemaLogin } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
+import { AiOutlineMail } from "react-icons/ai"
 
 
 const LoginComponent = () => {
@@ -36,7 +37,6 @@ const LoginComponent = () => {
     // onChange 
     const handleChange = (e) => {
         const { name, value } = e.target
-        console.log(name);
         setFormValue({ ...formValue, [name]: value })
     }
 
@@ -124,6 +124,7 @@ const LoginComponent = () => {
                             handleChange={e => handleChange(e)}
                             errors={errors}
                             state={formValue.email}
+                            icon={<AiOutlineMail size={24} className='style-icon' />}
                         />
                         <InputPassword
                             type={passwordType}
@@ -131,6 +132,8 @@ const LoginComponent = () => {
                             register={register}
                             handleChange={e => handleChange(e)}
                             errors={errors}
+                            state={formValue.password}
+                            passwordType={passwordType}
                             togglePassword={togglePassword}
                         />
                         <div className='text-center mt-4'>

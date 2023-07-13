@@ -35,3 +35,10 @@ export const schemaLogin = yup.object().shape({
   email: yup.string().email('Email is not valid').required('Email is required'),
   password: yup.string().required('Password is required').min(8, 'Your password is too short'),
 });
+
+// type
+export const inputType = {
+  PASSWORD: 'password',
+  TEXT: 'text',
+  EMAIL: 'email',
+};

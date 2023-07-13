@@ -13,6 +13,8 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { renderAvatar } from '@/helpers';
 import { appRouter, schemaRegister } from '@/constants';
+import InputText from '../base/form/InputText';
+import InputPassword from '../base/form/InputPassword';
 
 const RegisterComponent = () => {
     // router
@@ -25,12 +27,18 @@ const RegisterComponent = () => {
     const [passwordType, setPasswordType] = useState("password")
 
     // state of input
-    const [value, setValue] = useState({
-        firstNameInput: "",
-        lastNameInput: "",
-        emailInput: "",
-        passwordInput: "",
+    const [formValue, setFormValue] = useState({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
     })
+
+    // handle change 
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormValue({ ...formValue, [name]: value })
+    }
 
     // react hook form combine with with yup
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -86,67 +94,41 @@ const RegisterComponent = () => {
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className='flex justify-between mt-4 relative'>
-                            <div >
-                                <input id='firstname' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer'  {...register("firstname")}
-                                    onChange={(e) => setValue({
-                                        ...value, firstNameInput: e.target.value
-                                    })}
-                                />
-                                <p className='text-red font-bold flex'>{errors.firstname?.message}</p>
-                                {
-                                    value.firstNameInput ?
-                                        <label htmlFor="firstname" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>First Name</label>
-                                        :
-                                        <label htmlFor="firstname" className='absolute top-[50%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>First Name</label>
-
-                                }
-                                <BiUserCircle size={24} className='absolute top-2 right-64 text-zinc' />
-                            </div>
-                            <div>
-                                <input id='lastname' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("lastname")} onChange={(e) => setValue({
-                                    ...value, lastNameInput: e.target.value
-                                })} />
-                                <p className='text-red font-bold flex'>{errors.lastname?.message}</p>
-
-                                {
-                                    value.lastNameInput ?
-                                        <label htmlFor="lastname" className='absolute top-0 transform translate-y-[-50%] left-[250px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Last Name</label>
-                                        :
-                                        <label htmlFor="lastname" className='absolute top-[50%] transform translate-y-[-50%] left-[250px] select-none text-zinc pointer-events-none '>Last Name</label>
-                                }
-
-                                <BiUserCircle size={24} className='absolute top-2 right-3 text-zinc' />
-                            </div>
+                            <InputText
+                                name="firstname"
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.firstname}
+                                icon={<BiUserCircle size={24} className="style-icon" />}
+                            />
+                            <InputText
+                                name="lastname"
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.lastname}
+                                icon={<BiUserCircle size={24} className="style-icon" />}
+                            />
                         </div>
-                        <div className='relative text-center mt-4'>
-                            <input id='email' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("email")} onChange={(e) => setValue({
-                                ...value, emailInput: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.email?.message}</p>
-                            {
-                                value.emailInput ? <label htmlFor="email" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Email</label> :
-                                    <label htmlFor="email" className='absolute top-[50%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Email</label>
-                            }
-                            <AiOutlineMail size={24} className='absolute top-2 right-3 text-zinc' />
-                        </div>
-                        <div className='relative text-center mt-4'>
-                            <input id='password' autoComplete='off' type={passwordType} className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("password")} onChange={(e) => setValue({
-                                ...value, passwordInput: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.password?.message}</p>
-                            {
-                                value.passwordInput ?
-                                    <label htmlFor="password" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Password</label> :
-                                    <label htmlFor="password" className='absolute top-[32%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Password</label>
-                            }
-                            <button onClick={togglePassword}>
-                                {
-                                    passwordType === "password" ? <AiOutlineEyeInvisible size={24} className='absolute top-2 right-3 text-zinc' /> :
-                                        <AiOutlineEye size={24} className='absolute top-2 right-3 text-zinc' />
-                                }
-
-                            </button>
-                        </div>
+                        <InputText
+                            name="email"
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.email}
+                            icon={<AiOutlineMail size={24} className='style-icon' />}
+                        />
+                        <InputPassword
+                            type={passwordType}
+                            name="password"
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.password}
+                            passwordType={passwordType}
+                            togglePassword={togglePassword}
+                        />
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 
                             bg-blue hover:bg-[#4161cc] transition duration-300'>
