@@ -5,9 +5,7 @@ import classNames from 'classnames'
 const InputText = (props) => {
     const { name, register, handleChange, errors, state, icon } = props
 
-    const styleInput = "style-input"
-
-    const inputClases = classNames(styleInput, {
+    const inputClases = classNames("style-input", {
         ' top-[0] peer-focus:top-0 transition-all duration-500 capitalize': state,
         ' top-[50%] capitalize': !state
     })
@@ -22,8 +20,8 @@ const InputText = (props) => {
                 {...register(name)}
                 onChange={handleChange}
             />
-            <p className='text-red font-bold flex'>{errors.email?.message}</p>
-            <label htmlFor="email" className={inputClases}>{name}</label>
+            <p className='style-error'>{errors.email?.message}</p>
+            <label htmlFor={name} className={inputClases}>{name}</label>
             {icon}
         </div>
     )

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Video from '../base/video'
+import Video from '@/components/base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import Link from 'next/link'
@@ -9,11 +9,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { UserAuth } from '@/hooks/useAuth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
-import { appRouter, schemaLogin } from '@/constants';
+import { appRouter, inputType, schemaLogin } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
-import { AiOutlineMail } from "react-icons/ai"
-
+import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 
 const LoginComponent = () => {
     // call googleSignIn
@@ -119,7 +118,7 @@ const LoginComponent = () => {
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <InputText
-                            name="email"
+                            name={inputType.EMAIL}
                             register={register}
                             handleChange={e => handleChange(e)}
                             errors={errors}
@@ -128,13 +127,15 @@ const LoginComponent = () => {
                         />
                         <InputPassword
                             type={passwordType}
-                            name="password"
+                            name={inputType.PASSWORD}
                             register={register}
                             handleChange={e => handleChange(e)}
                             errors={errors}
                             state={formValue.password}
                             passwordType={passwordType}
                             togglePassword={togglePassword}
+                            eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
+                            eye={<AiOutlineEye size={24} className="style-icon" />}
                         />
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 

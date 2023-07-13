@@ -39,6 +39,7 @@ export const schemaLogin = yup.object().shape({
 // type
 export const inputType = {
   PASSWORD: 'password',
-  TEXT: 'text',
   EMAIL: 'email',
+  FIRSTNAME: 'firstname',
+  LASTNAME: 'lastname',
 };

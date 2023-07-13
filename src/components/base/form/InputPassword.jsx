@@ -1,25 +1,19 @@
 import classNames from 'classnames'
 import React from 'react'
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 import { inputType } from '@/constants'
 
 const InputPassword = (props) => {
-    const { type, name, register, handleChange, errors, togglePassword, state, passwordType } = props
+    const { type, name, register, handleChange, errors, togglePassword, state, passwordType, eyeInvisible, eye } = props
 
-    const styleLabel = "style-label"
-
-    const styleButton = "style-button"
-
-    const labelClasses = classNames(styleLabel, {
+    const labelClasses = classNames("style-input", {
         "top-0 peer-focus:top-0 transition-all duration-500": state,
         "top-[32%]": !state
     })
 
-
     return (
         <div className='relative text-center mt-4'>
             <input
-                id="password"
+                id={inputType.PASSWORD}
                 autoComplete="off"
                 type={type}
                 name={name}
@@ -27,14 +21,13 @@ const InputPassword = (props) => {
                 {...register(name)}
                 onChange={handleChange}
             />
-            <p className='text-red font-bold flex'>{errors.password?.message}</p>
-            <label htmlFor="password" className={labelClasses}>Password</label>
-
+            <p className='style-error'>{errors.password?.message}</p>
+            <label htmlFor={name} className={labelClasses}>Password</label>
             <button onClick={togglePassword}>
                 {
                     passwordType === inputType.PASSWORD ?
-                        <AiOutlineEyeInvisible size={24} className={styleButton} /> :
-                        <AiOutlineEye size={24} className={styleButton} />
+                        eyeInvisible :
+                        eye
                 }
             </button>
         </div>

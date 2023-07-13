@@ -3,16 +3,13 @@
 @tailwind utilities;
 
 @layer components {
-  .style-label {
-    @apply absolute transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none;
-  }
   .style-input {
     @apply absolute transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none;
   }
-  .style-button {
-    @apply absolute top-2 right-3 text-zinc;
-  }
   .style-icon {
     @apply absolute top-2 right-3 text-zinc;
+  }
+  .style-error {
+    @apply text-red font-bold flex;
   }
 }

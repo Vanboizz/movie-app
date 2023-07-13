@@ -12,9 +12,9 @@ import { auth, db } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { renderAvatar } from '@/helpers';
-import { appRouter, schemaRegister } from '@/constants';
-import InputText from '../base/form/InputText';
-import InputPassword from '../base/form/InputPassword';
+import { appRouter, inputType, schemaRegister } from '@/constants';
+import InputText from '@/components/base/form/InputText';
+import InputPassword from '@/components/base/form/InputPassword';
 
 const RegisterComponent = () => {
     // router
@@ -95,7 +95,7 @@ const RegisterComponent = () => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className='flex justify-between mt-4 relative'>
                             <InputText
-                                name="firstname"
+                                name={inputType.FIRSTNAME}
                                 register={register}
                                 handleChange={e => handleChange(e)}
                                 errors={errors}
@@ -103,7 +103,7 @@ const RegisterComponent = () => {
                                 icon={<BiUserCircle size={24} className="style-icon" />}
                             />
                             <InputText
-                                name="lastname"
+                                name={inputType.LASTNAME}
                                 register={register}
                                 handleChange={e => handleChange(e)}
                                 errors={errors}
@@ -112,7 +112,7 @@ const RegisterComponent = () => {
                             />
                         </div>
                         <InputText
-                            name="email"
+                            name={inputType.EMAIL}
                             register={register}
                             handleChange={e => handleChange(e)}
                             errors={errors}
@@ -121,13 +121,15 @@ const RegisterComponent = () => {
                         />
                         <InputPassword
                             type={passwordType}
-                            name="password"
+                            name={inputType.PASSWORD}
                             register={register}
                             handleChange={e => handleChange(e)}
                             errors={errors}
                             state={formValue.password}
                             passwordType={passwordType}
                             togglePassword={togglePassword}
+                            eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
+                            eye={<AiOutlineEye size={24} className="style-icon" />}
                         />
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 
