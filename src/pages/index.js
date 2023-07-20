@@ -28,7 +28,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log(user);
     setLoading(true);
     Promise.all([
       handleFetchData(`/3/${type}/popular`),
@@ -81,9 +80,7 @@ export default function Home() {
         console.log(error);
       })
       .finally(() => {
-        setTimeout(() => {
-          setLoading(false);
-        }, 80);
+        setLoading(false);
       });
   }, [type]);
 
@@ -115,11 +112,11 @@ export default function Home() {
             ))}
           </div>
           <div className="flex gap-1 items-center text-[#989898] pr-4">
-            <p>{user && user?.user ? user?.user?.displayName : null}</p>
-            {user && user?.user ? (
+            <p>{user && user?.displayName}</p>
+            {user ? (
               <Image
                 className="rounded-full"
-                src={user?.user?.photoURL}
+                src={user?.photoURL}
                 width={28}
                 height={28}
                 alt="user"

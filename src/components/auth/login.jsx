@@ -70,11 +70,7 @@ const LoginComponent = () => {
                 querySnapshot
                     .then((query) => {
                         query.docs.map((doc) => {
-                            const data = { ...credential }
-                            data.user = {
-                                ...data.user,
-                                ...doc.data()
-                            }
+                            const data = { ...credential.user, ...doc.data() }
                             setUser(data)
                             localStorage.setItem("credential", JSON.stringify(data))
                             router.push(link.home)
