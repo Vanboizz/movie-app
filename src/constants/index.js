@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 // array images
 export const arrayImages = [
   '/assest/images/avatar-one.webp',
@@ -9,3 +11,41 @@ export const arrayImages = [
   '/assest/images/avatar-seven.jpg',
   '/assest/images/avatar-eight.jpg',
 ];
+
+// Logo
+export const logo = '/assest/images/logo.png';
+
+// router
+export const appRouter = {
+  login: '/login',
+  home: '/',
+  profile: '/profile',
+  register: '/register',
+  explore: '/explore',
+  history: '/history',
+};
+
+// schema register
+export const schemaRegister = yup.object().shape({
+  firstname: yup.string().required('First name is required'),
+  lastname: yup.string().required('Last name is required'),
+  email: yup.string().email('Email is not valid').required('Email is required'),
+  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+});
+
+// schema login
+export const schemaLogin = yup.object().shape({
+  email: yup.string().email('Email is not valid').required('Email is required'),
+  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+});
+
+// type
+export const inputType = {
+  PASSWORD: 'password',
+  EMAIL: 'email',
+  FIRSTNAME: 'firstname',
+  LASTNAME: 'lastname',
+};
+
+// tabs
+export const tabs = ['tv', 'movie'];

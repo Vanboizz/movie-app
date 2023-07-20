@@ -1,45 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import Video from '../base/video'
+import React, { useState } from 'react'
+import Video from '@/components/base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
-import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 import Link from 'next/link'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { UserAuth } from '@/hooks/useAuth';
 import { auth } from '@/firebase';
 import { useRouter } from 'next/router';
-
+import { appRouter, inputType, schemaLogin } from '@/constants';
+import InputText from '@/components/base/form/InputText';
+import InputPassword from '@/components/base/form/InputPassword';
+import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const LoginComponent = () => {
-
-    const { user, setUser } = UserAuth()
     // call googleSignIn
-    const { googleSignIn, facebookSiginIn } = UserAuth()
+    const { googleSignIn, facebookSiginIn, setUser } = UserAuth()
 
     // router
     const router = useRouter()
+
+    // link
+    const link = appRouter
 
     //state of type password
     const [passwordType, setPasswordType] = useState("password")
 
     // state of object
-    const [value, setValue] = useState({
+    const [formValue, setFormValue] = useState({
         email: "",
         password: ""
     })
 
-    // schema
-    const schema = yup.object().shape({
-        email: yup.string().email("Email is not valid").required("Email is required"),
-        password: yup.string().required('Password is required').min(8, "Your password is too short"),
-    })
+    // onChange 
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormValue({ ...formValue, [name]: value })
+    }
 
     // useForm
     const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema)
+        defaultValues: {
+            email: '',
+            password: ''
+        },
+        resolver: yupResolver(schemaLogin)
     })
 
     // togglePassword
@@ -52,14 +60,25 @@ const LoginComponent = () => {
         setPasswordType("password")
     }
 
+
     // onSubmit
     const onSubmit = (data, e) => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then((credential) => {
-                setUser(credential.user)
-                localStorage.setItem("credential", JSON.stringify(credential.user))
-                router.push('/')
+                const querySnapshot = getDocs(collection(db, 'user'));
+                querySnapshot
+                    .then((query) => {
+                        query.docs.map((doc) => {
+                            const data = { ...credential.user, ...doc.data() }
+                            setUser(data)
+                            localStorage.setItem("credential", JSON.stringify(data))
+                            router.push(link.home)
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
             })
             .catch((error) => {
                 console.log(error);
@@ -72,7 +91,7 @@ const LoginComponent = () => {
             facebookSiginIn().then((credential) => {
                 setUser(credential.user)
                 localStorage.setItem("credential", JSON.stringify(credential.user))
-                router.push('/')
+                router.push(link.home)
             })
         } catch (error) {
             console.log(error);
@@ -84,7 +103,7 @@ const LoginComponent = () => {
         googleSignIn().then((credential) => {
             setUser(credential.user)
             localStorage.setItem("credential", JSON.stringify(credential.user))
-            router.push('/')
+            router.push(link.home)
         })
             .catch((error) => {
                 console.log(error)
@@ -111,42 +130,26 @@ const LoginComponent = () => {
                         <p className='text-zinc font-normal text-center mt-4'>or use your email account:</p>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className='relative text-center mt-4'>
-                            <input id='email' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("email")} onChange={(e) => setValue({
-                                ...value,
-                                email: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.email?.message}</p>
-                            {
-                                value.email ?
-                                    <label htmlFor="email" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Email</label>
-                                    :
-                                    <label htmlFor="email" className='absolute top-[50%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Email</label>
-                            }
-                            <AiOutlineMail size={24} className='absolute top-2 right-3 text-zinc' />
-
-                        </div>
-                        <div className='relative text-center mt-4'>
-                            <input id="password" type={passwordType} className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("password")} onChange={(e) => setValue({
-                                ...value,
-                                password: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.password?.message}</p>
-                            {
-                                value.password ?
-                                    <label htmlFor="password" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Password</label>
-                                    :
-                                    <label htmlFor="password" className='absolute top-[32%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Password</label>
-                            }
-                            <button onClick={togglePassword}>
-                                {
-                                    passwordType === "password" ?
-                                        <AiOutlineEyeInvisible size={24} className='absolute top-2 right-3 text-zinc' /> :
-                                        <AiOutlineEye size={24} className='absolute top-2 right-3 text-zinc' />
-                                }
-
-                            </button>
-                        </div>
+                        <InputText
+                            name={inputType.EMAIL}
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.email}
+                            icon={<AiOutlineMail size={24} className='style-icon' />}
+                        />
+                        <InputPassword
+                            type={passwordType}
+                            name={inputType.PASSWORD}
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.password}
+                            passwordType={passwordType}
+                            togglePassword={togglePassword}
+                            eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
+                            eye={<AiOutlineEye size={24} className="style-icon" />}
+                        />
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 
                             bg-blue hover:bg-[#4161cc] transition duration-300'>

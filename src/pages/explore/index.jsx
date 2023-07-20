@@ -1,8 +1,12 @@
 import React from 'react'
+import Head from 'next/head'
 
 const Explore = () => {
     return (
-        <div>Explore</div>
+        <Head>
+            <title>Explore | TbtWorld</title>
+            <meta name='description' content='Web devlopment' />
+        </Head>
     )
 }
 

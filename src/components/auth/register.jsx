@@ -1,45 +1,48 @@
 import React, { useState } from 'react'
-import Video from '../base/video'
+import Video from '@/components/base/video'
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebookF } from "react-icons/fa";
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 import { BiUserCircle } from "react-icons/bi"
 import Link from "next/link"
 import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
 import { useForm } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { renderAvatar } from '@/helpers';
+import { appRouter, inputType, schemaRegister } from '@/constants';
+import InputText from '@/components/base/form/InputText';
+import InputPassword from '@/components/base/form/InputPassword';
 
 const RegisterComponent = () => {
     // router
     const router = useRouter()
 
+    // link
+    const link = appRouter
+
     //state of type password
     const [passwordType, setPasswordType] = useState("password")
 
     // state of input
-    const [value, setValue] = useState({
-        firstNameInput: "",
-        lastNameInput: "",
-        emailInput: "",
-        passwordInput: "",
+    const [formValue, setFormValue] = useState({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
     })
 
-    // schema
-    const schema = yup.object().shape({
-        firstname: yup.string().required("First name is required"),
-        lastname: yup.string().required("Last name is required"),
-        email: yup.string().email("Email is not valid").required("Email is required"),
-        password: yup.string().required('Password is required').min(8, "Your password is too short"),
-    })
+    // handle change 
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormValue({ ...formValue, [name]: value })
+    }
 
-    // useForm
+    // react hook form combine with with yup
     const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schemaRegister)
     })
 
     // togglePassword
@@ -60,9 +63,9 @@ const RegisterComponent = () => {
                 setDoc(doc(db, "user", credential?.user.uid), {
                     displayName: data.firstname,
                     email: data.email,
-                    avatar: renderAvatar()
+                    photoURL: renderAvatar()
                 })
-                router.push("/login")
+                router.push(link.login)
             })
             .catch((error) => {
                 console.log(error);
@@ -91,67 +94,43 @@ const RegisterComponent = () => {
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className='flex justify-between mt-4 relative'>
-                            <div >
-                                <input id='firstname' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer'  {...register("firstname")}
-                                    onChange={(e) => setValue({
-                                        ...value, firstNameInput: e.target.value
-                                    })}
-                                />
-                                <p className='text-red font-bold flex'>{errors.firstname?.message}</p>
-                                {
-                                    value.firstNameInput ?
-                                        <label htmlFor="firstname" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>First Name</label>
-                                        :
-                                        <label htmlFor="firstname" className='absolute top-[50%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>First Name</label>
-
-                                }
-                                <BiUserCircle size={24} className='absolute top-2 right-64 text-zinc' />
-                            </div>
-                            <div>
-                                <input id='lastname' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("lastname")} onChange={(e) => setValue({
-                                    ...value, lastNameInput: e.target.value
-                                })} />
-                                <p className='text-red font-bold flex'>{errors.lastname?.message}</p>
-
-                                {
-                                    value.lastNameInput ?
-                                        <label htmlFor="lastname" className='absolute top-0 transform translate-y-[-50%] left-[250px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Last Name</label>
-                                        :
-                                        <label htmlFor="lastname" className='absolute top-[50%] transform translate-y-[-50%] left-[250px] select-none text-zinc pointer-events-none '>Last Name</label>
-                                }
-
-                                <BiUserCircle size={24} className='absolute top-2 right-3 text-zinc' />
-                            </div>
+                            <InputText
+                                name={inputType.FIRSTNAME}
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.firstname}
+                                icon={<BiUserCircle size={24} className="style-icon" />}
+                            />
+                            <InputText
+                                name={inputType.LASTNAME}
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.lastname}
+                                icon={<BiUserCircle size={24} className="style-icon" />}
+                            />
                         </div>
-                        <div className='relative text-center mt-4'>
-                            <input id='email' autoComplete='off' className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("email")} onChange={(e) => setValue({
-                                ...value, emailInput: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.email?.message}</p>
-                            {
-                                value.emailInput ? <label htmlFor="email" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Email</label> :
-                                    <label htmlFor="email" className='absolute top-[50%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Email</label>
-                            }
-                            <AiOutlineMail size={24} className='absolute top-2 right-3 text-zinc' />
-                        </div>
-                        <div className='relative text-center mt-4'>
-                            <input id='password' autoComplete='off' type={passwordType} className='w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer' {...register("password")} onChange={(e) => setValue({
-                                ...value, passwordInput: e.target.value
-                            })} />
-                            <p className='text-red font-bold flex'>{errors.password?.message}</p>
-                            {
-                                value.passwordInput ?
-                                    <label htmlFor="password" className='absolute top-0 transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none peer-focus:top-0 transition-all duration-500'>Password</label> :
-                                    <label htmlFor="password" className='absolute top-[32%] transform translate-y-[-50%] left-[16px] select-none text-zinc pointer-events-none '>Password</label>
-                            }
-                            <button onClick={togglePassword}>
-                                {
-                                    passwordType === "password" ? <AiOutlineEyeInvisible size={24} className='absolute top-2 right-3 text-zinc' /> :
-                                        <AiOutlineEye size={24} className='absolute top-2 right-3 text-zinc' />
-                                }
-
-                            </button>
-                        </div>
+                        <InputText
+                            name={inputType.EMAIL}
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.email}
+                            icon={<AiOutlineMail size={24} className='style-icon' />}
+                        />
+                        <InputPassword
+                            type={passwordType}
+                            name={inputType.PASSWORD}
+                            register={register}
+                            handleChange={e => handleChange(e)}
+                            errors={errors}
+                            state={formValue.password}
+                            passwordType={passwordType}
+                            togglePassword={togglePassword}
+                            eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
+                            eye={<AiOutlineEye size={24} className="style-icon" />}
+                        />
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 
                             bg-blue hover:bg-[#4161cc] transition duration-300'>

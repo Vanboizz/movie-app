@@ -11,10 +11,10 @@ export default function App({ Component, pageProps }) {
     );
   }
   return (
-    <Layout>
-      <AuthContextProvider>
+    <AuthContextProvider>
+      <Layout>
         <Component {...pageProps} />
-      </AuthContextProvider>
-    </Layout>
+      </Layout>
+    </AuthContextProvider>
   );
 }
