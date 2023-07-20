@@ -12,6 +12,9 @@ export const arrayImages = [
   '/assest/images/avatar-eight.jpg',
 ];
 
+// Logo
+export const logo = '/assest/images/logo.png';
+
 // router
 export const appRouter = {
   login: '/login',
@@ -43,3 +46,6 @@ export const inputType = {
   FIRSTNAME: 'firstname',
   LASTNAME: 'lastname',
 };
+
+// tabs
+export const tabs = ['tv', 'movie'];

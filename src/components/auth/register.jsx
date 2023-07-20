@@ -63,7 +63,7 @@ const RegisterComponent = () => {
                 setDoc(doc(db, "user", credential?.user.uid), {
                     displayName: data.firstname,
                     email: data.email,
-                    avatar: renderAvatar()
+                    photoURL: renderAvatar()
                 })
                 router.push(link.login)
             })

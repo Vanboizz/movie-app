@@ -13,6 +13,8 @@ import { appRouter, inputType, schemaLogin } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const LoginComponent = () => {
     // call googleSignIn
@@ -58,14 +60,29 @@ const LoginComponent = () => {
         setPasswordType("password")
     }
 
+
     // onSubmit
     const onSubmit = (data, e) => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then((credential) => {
-                setUser(credential.user)
-                localStorage.setItem("credential", JSON.stringify(credential.user))
-                router.push(link.home)
+                const querySnapshot = getDocs(collection(db, 'user'));
+                querySnapshot
+                    .then((query) => {
+                        query.docs.map((doc) => {
+                            const data = { ...credential }
+                            data.user = {
+                                ...data.user,
+                                ...doc.data()
+                            }
+                            setUser(data)
+                            localStorage.setItem("credential", JSON.stringify(data))
+                            router.push(link.home)
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    })
             })
             .catch((error) => {
                 console.log(error);
