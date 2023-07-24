@@ -13,7 +13,7 @@ import { appRouter, inputType, schemaLogin } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 const LoginComponent = () => {
@@ -65,20 +65,18 @@ const LoginComponent = () => {
     const onSubmit = (data, e) => {
         e.preventDefault()
         signInWithEmailAndPassword(auth, data.email, data.password)
-            .then((credential) => {
-                const querySnapshot = getDocs(collection(db, 'user'));
-                querySnapshot
-                    .then((query) => {
-                        query.docs.map((doc) => {
-                            const data = { ...credential.user, ...doc.data() }
-                            setUser(data)
-                            localStorage.setItem("credential", JSON.stringify(data))
-                            router.push(link.home)
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    })
+            .then(async (credential) => {
+                const docRef = doc(db, "user", credential.user.uid)
+                const docSnap = await getDoc(docRef)
+                if (docSnap.exists()) {
+                    const data = { ...credential.user, ...docSnap.data() }
+                    localStorage.setItem("credential", JSON.stringify(data))
+                    setUser(data)
+                    router.push(link.home)
+                }
+                else {
+                    console.log("No such document!");
+                }
             })
             .catch((error) => {
                 console.log(error);

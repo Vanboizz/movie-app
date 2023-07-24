@@ -116,7 +116,7 @@ export default function Home() {
             {user ? (
               <Image
                 className="rounded-full"
-                src={user?.photoURL}
+                src={user && user?.photoURL}
                 width={28}
                 height={28}
                 alt="user"

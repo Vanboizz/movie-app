@@ -34,7 +34,7 @@ export const AuthContextProvider = ({ children }) => {
   //onAuthStateChanged
   useEffect(() => {
     const unsubcribe = onAuthStateChanged(auth, (credential) => {
-      if (credential) {
+      if (user) {
         const data = JSON.parse(localStorage.getItem('credential')) || null;
         if (data) {
           setUser(data);

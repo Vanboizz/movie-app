@@ -61,7 +61,7 @@ const RegisterComponent = () => {
         createUserWithEmailAndPassword(auth, data.email, data.password)
             .then((credential) => {
                 setDoc(doc(db, "user", credential?.user.uid), {
-                    displayName: data.firstname,
+                    displayName: data.firstname + data.lastname,
                     email: data.email,
                     photoURL: renderAvatar()
                 })
