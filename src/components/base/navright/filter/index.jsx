@@ -4,7 +4,6 @@ import { BiDotsVerticalRounded } from 'react-icons/bi';
 import Link from 'next/link';
 import Image from 'next/image';
 import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
-import LoadingCircle from '../../loading/LoadingCircle';
 
 const Filter = (props) => {
     const { data, trending } = props
@@ -89,19 +88,17 @@ const Loading = (props) => {
             <ul className="flex gap-2 flex-wrap mt-8">
                 {
                     data.slice(0, 5).map((value, index) => (
-                        <li className="bg-[#333335] text-[#989898] rounded-full px-2 py-1" key={index}>
-                            <div >
-                                <LoadingCircle></LoadingCircle>
-                            </div>
-                        </li>
+                        <div className="bg-[#333335] text-[#989898] rounded-full px-8 py-2" key={index}>
+                            <LoadingSkeleton></LoadingSkeleton>
+                        </div>
                     ))
                 }
             </ul>
             <div className="mt-4">
-                <p className="flex justify-between mb-3.5 text-xl items-center font-medium">
+                <div className="flex justify-between mb-3.5 text-xl items-center font-medium">
                     <LoadingSkeleton className='w-20 h-3 rounded-2xl'></LoadingSkeleton>
                     <BiDotsVerticalRounded size={24} className="text-[#989898]" />
-                </p>
+                </div>
                 <ul className="flex flex-col gap-5">
                     {
                         trending.slice(0, 2).map((value, index) => (

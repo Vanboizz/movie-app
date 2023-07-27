@@ -1,4 +1,8 @@
 import * as yup from 'yup';
+import { AiOutlineHome, AiOutlineSearch, AiOutlineHistory } from 'react-icons/ai';
+import { MdOutlineExplore } from 'react-icons/md';
+import { BiUserCircle } from 'react-icons/bi';
+import { BsBookmarkHeart } from 'react-icons/bs';
 
 // array images
 export const arrayImages = [
@@ -49,3 +53,52 @@ export const inputType = {
 
 // tabs
 export const tabs = ['tv', 'movie'];
+
+// navbar
+export const sidebarData = [
+  {
+    title: 'MENU',
+    items: [
+      {
+        name: 'home',
+        path: '/',
+        icon: <AiOutlineHome size={24} />,
+      },
+      {
+        name: 'explore',
+        path: 'explore',
+        icon: <MdOutlineExplore size={24} />,
+      },
+      {
+        name: 'search',
+        path: 'search',
+        icon: <AiOutlineSearch size={24} />,
+      },
+    ],
+  },
+  {
+    title: 'PERSONAL',
+    items: [
+      {
+        name: 'bookmarked',
+        path: 'bookmarked',
+        icon: <BsBookmarkHeart size={24} />,
+      },
+      {
+        name: 'history',
+        path: 'history',
+        icon: <AiOutlineHistory size={24} />,
+      },
+    ],
+  },
+  {
+    title: 'PERSONAL',
+    items: [
+      {
+        name: 'profile',
+        path: 'profile',
+        icon: <BiUserCircle size={24} />,
+      },
+    ],
+  },
+];

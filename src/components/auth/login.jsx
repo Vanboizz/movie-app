@@ -15,6 +15,7 @@ import InputPassword from '@/components/base/form/InputPassword';
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
+import useOnKeyPress from '@/hooks/useOnKeyPress';
 
 const LoginComponent = () => {
     // call googleSignIn
@@ -127,7 +128,7 @@ const LoginComponent = () => {
                         </div>
                         <p className='text-zinc font-normal text-center mt-4'>or use your email account:</p>
                     </div>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)} onKeyDown={useOnKeyPress(handleSubmit, "Enter")}>
                         <InputText
                             name={inputType.EMAIL}
                             register={register}

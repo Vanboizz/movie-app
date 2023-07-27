@@ -23,12 +23,22 @@ export default function Home() {
   const [upComing, setUpComing] = useState([]);
 
   // type
-  const [type, setType] = useState('tv');
+  let types;
+  const [type, setType] = useState(types);
+
   // loading
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    if (typeof window !== 'undefined') {
+      if (localStorage.getItem('tab') === null) {
+        setType('tv');
+      }
+      if (localStorage.getItem('tab') !== null) {
+        setType(localStorage.getItem('tab'));
+      }
+    }
     Promise.all([
       handleFetchData(`/3/${type}/popular`),
       handleFetchData(`/3/${type}/top_rated`),
@@ -105,6 +115,7 @@ export default function Home() {
                 }`}
                 onClick={() => {
                   setType(tab);
+                  localStorage.setItem('tab', tab);
                 }}
               >
                 <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
@@ -113,10 +124,10 @@ export default function Home() {
           </div>
           <div className="flex gap-1 items-center text-[#989898] pr-4">
             <p>{user && user?.displayName}</p>
-            {user ? (
+            {user && user.photoURL ? (
               <Image
                 className="rounded-full"
-                src={user && user?.photoURL}
+                src={user.photoURL}
                 width={28}
                 height={28}
                 alt="user"
