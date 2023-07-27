@@ -1,7 +1,7 @@
 import { db } from '@/firebase'
 import { UserAuth } from '@/hooks/useAuth'
-import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updateEmail, updatePassword, updateProfile } from 'firebase/auth'
-import { doc, updateDoc } from 'firebase/firestore'
+import { EmailAuthProvider, deleteUser, getAuth, reauthenticateWithCredential, updateEmail, updatePassword, updateProfile } from 'firebase/auth'
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore'
 import React, { useRef } from 'react'
 
 const ModalConfimPasswordAccount = (props) => {
@@ -39,6 +39,7 @@ const ModalConfimPasswordAccount = (props) => {
                                 .catch(error => console.log(error))
                         }
                         else if (type === "Change Password") {
+                            // Change Password
                             updatePassword(auth.currentUser, password)
                                 .then(() => {
                                     console.log("Sucess");
@@ -46,6 +47,7 @@ const ModalConfimPasswordAccount = (props) => {
                                 .catch(error => console.log(error))
                         }
                         else if (type === "Change Name") {
+                            // Change Name
                             updateProfile(auth.currentUser, {
                                 firstName: firstName,
                                 lastName: lastName
@@ -66,9 +68,20 @@ const ModalConfimPasswordAccount = (props) => {
 
                                 })
                                 .catch(error => console.log(error))
+                        } else if (type === "Delete Account") {
+                            // Delete Account
+                            deleteUser(auth.currentUser)
+                                .then(() => {
+                                    deleteDoc(docRef)
+                                        .then(() => {
+                                            setUser(null)
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        })
+                                })
+                                .catch(error => console.log(error))
                         }
-                    } else {
-                        // toast errror passs
                     }
                 })
                 .catch((error) => console.log(error))

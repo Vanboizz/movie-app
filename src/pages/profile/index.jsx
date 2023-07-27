@@ -72,6 +72,7 @@ const Profile = () => {
     const deleteAccount = (e) => {
         e.preventDefault()
         if (isPasswordProvider) {
+            setType("Delete Account")
             setModalConfimDelete(true)
         }
     }
