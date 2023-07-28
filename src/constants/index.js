@@ -37,6 +37,11 @@ export const schemaRegister = yup.object().shape({
   password: yup.string().required('Password is required').min(8, 'Your password is too short'),
 });
 
+// schema password
+export const schemaPassword = yup.object().shape({
+  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+});
+
 // schema login
 export const schemaLogin = yup.object().shape({
   email: yup.string().email('Email is not valid').required('Email is required'),

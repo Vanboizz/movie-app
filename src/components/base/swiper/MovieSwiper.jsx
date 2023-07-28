@@ -48,7 +48,7 @@ const MovieSwiper = (props) => {
                     data.map((value, i) => (
                         <SwiperSlide key={i}>
                             <Link href="">
-                                <div >
+                                <div className='hover:scale-105 transition duration-300'>
                                     <div className="absolute top-1 left-2 bg-blue flex items-center gap-0.5 px-1 py-0.5 rounded-xl">
                                         <span className="text-white text-xs">{value.vote_average}</span>
                                         <AiTwotoneStar color="white" size={12} />

@@ -11,8 +11,12 @@ import axios from 'axios'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { useRouter } from 'next/router'
-import { appRouter } from '@/constants'
+import { appRouter, schemaPassword } from '@/constants'
 import ModalConfirmDeleteAccount from '@/components/base/modal/ModalConfirmDeleteAccount'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 const Profile = () => {
     const { user, setUser } = UserAuth()
@@ -27,7 +31,10 @@ const Profile = () => {
     const [modalConfimDelete, setModalConfimDelete] = useState(false)
     const [type, setType] = useState()
     const router = useRouter()
-    const isPasswordProvider = user && user.providerData && user.providerData[0].providerId === "password"
+
+    const { handleSubmit, register, formState: { errors } } = useForm({
+        resolver: yupResolver(schemaPassword)
+    })
 
     const showEmail = (e) => {
         e.preventDefault()
@@ -47,34 +54,31 @@ const Profile = () => {
 
     const changeEmail = (e) => {
         e.preventDefault()
-        if (isPasswordProvider) {
+        if (user.email === email) {
+            toast.error("Email have already existed")
+            setModalConfirmPassword(false)
+        }
+        else {
             setType("Change Email")
             setModalConfirmPassword(true)
         }
     }
 
-    const changePassword = (e) => {
-        e.preventDefault()
-        if (isPasswordProvider) {
-            setType("Change Password")
-            setModalConfirmPassword(true)
-        }
+    const changePassword = () => {
+        setType("Change Password")
+        setModalConfirmPassword(true)
     }
 
     const changeName = (e) => {
         e.preventDefault()
-        if (isPasswordProvider) {
-            setType("Change Name")
-            setModalConfirmPassword(true)
-        }
+        setType("Change Name")
+        setModalConfirmPassword(true)
     }
 
     const deleteAccount = (e) => {
         e.preventDefault()
-        if (isPasswordProvider) {
-            setType("Delete Account")
-            setModalConfimDelete(true)
-        }
+        setType("Delete Account")
+        setModalConfimDelete(true)
     }
 
     const handleInputChange = (e) => {
@@ -89,6 +93,7 @@ const Profile = () => {
                     'Content-Type': 'multipart/form-data',
                 }
             }).then(response => {
+                toast("Upload image is successfull")
                 updateDoc(docRef, {
                     photoURL: response.data.data.display_url
                 })
@@ -112,6 +117,7 @@ const Profile = () => {
     if (user) {
         return (
             <>
+                <ToastContainer />
                 <Head>
                     <title>Profile | TbtWorld</title>
                     <meta name="description" content="Genered by create next app" />
@@ -140,7 +146,7 @@ const Profile = () => {
                                                 :
                                                 <>
                                                     <form action="" className='flex justify-between gap-48 mt-1'>
-                                                        <input type="email" className='outline-none rounded-md selection:text-blue py-1 px-2 w-full bg-[#333335] text-[#989898]' value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                        <input type="email" className='outline-none rounded-md selection:text-blue py-1 px-2 w-full bg-[#333335] text-[#989898]' value={email} onChange={(e) => setEmail(e.target.value)} required />
                                                         <button onClick={changeEmail}>
                                                             <AiOutlineSend className='text-[#989898] hover:text-blue transition du\' size={20} />
                                                         </button>
@@ -165,8 +171,8 @@ const Profile = () => {
                                             <>
                                                 <form action="" className='flex justify-between mt-1'>
                                                     <div className='flex gap-3'>
-                                                        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className='selection:text-blue outline-none rounded-md py-1 px-2 w-full text-zinc bg-[#333335]' placeholder='First name' />
-                                                        <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className='selection:text-blue outline-none rounded-md py-1 px-2 w-full text-zinc bg-[#333335]' placeholder='Last name' />
+                                                        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className='selection:text-blue outline-none rounded-md py-1 px-2 w-full text-zinc bg-[#333335]' placeholder='First name' required />
+                                                        <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className='selection:text-blue outline-none rounded-md py-1 px-2 w-full text-zinc bg-[#333335]' placeholder='Last name' required />
                                                     </div>
                                                     <button>
                                                         <AiOutlineSend onClick={changeName} className='text-[#989898] hover:text-blue transition du\' size={20} />
@@ -186,13 +192,13 @@ const Profile = () => {
                             </div>
                             <div className='mt-10 '>
                                 <p className='text-white text-lg font-medium mb-3'>Change password</p>
-                                <form className='flex gap-32 items-center'>
+                                <form className='flex gap-32 items-center' onSubmit={handleSubmit(changePassword)}>
                                     <div className='flex-1'>
-                                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-[#333335] selection:text-blue text-zinc py-3 rounded-md outline-none px-5 text-blaxc w-full' placeholder='New password' />
+                                        <input type="password" {...register("password")} value={password} onChange={(e) => setPassword(e.target.value)} className='bg-[#333335] selection:text-blue text-zinc py-3 rounded-md outline-none px-5 text-blaxc w-full' placeholder='New password' />
+                                        <p className='style-error'>{errors.password?.message}</p>
                                     </div>
                                     {
-                                        isPasswordProvider &&
-                                        <button onClick={changePassword} className='bg-[#49494B] px-6 py-2 rounded-2xl text-white hover:bg-[#333335] transition duration-300'>Update</button>
+                                        <button className='bg-[#49494B] px-6 py-2 rounded-2xl text-white hover:bg-[#333335] transition duration-300'>Update</button>
                                     }
                                 </form>
                             </div>

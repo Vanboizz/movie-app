@@ -13,9 +13,12 @@ import { appRouter, inputType, schemaLogin } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
 import { AiOutlineMail, AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai"
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import useOnKeyPress from '@/hooks/useOnKeyPress';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LoginComponent = () => {
     // call googleSignIn
@@ -63,10 +66,10 @@ const LoginComponent = () => {
 
 
     // onSubmit
-    const onSubmit = (data, e) => {
-        e.preventDefault()
+    const onSubmit = (data) => {
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then(async (credential) => {
+                toast("Sign in is sucessful")
                 const docRef = doc(db, "user", credential.user.uid)
                 const docSnap = await getDoc(docRef)
                 if (docSnap.exists()) {
@@ -111,6 +114,7 @@ const LoginComponent = () => {
 
     return (
         <>
+            <ToastContainer />
             <Video />
             <div className='relative'>
                 <div className='absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[34%]'>
