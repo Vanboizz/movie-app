@@ -67,17 +67,17 @@ export const sidebarData = [
       {
         name: 'home',
         path: '/',
-        icon: <AiOutlineHome size={24} />,
+        icon: <AiOutlineHome size={28} />,
       },
       {
         name: 'explore',
-        path: 'explore',
-        icon: <MdOutlineExplore size={24} />,
+        path: '/explore',
+        icon: <MdOutlineExplore size={28} />,
       },
       {
         name: 'search',
-        path: 'search',
-        icon: <AiOutlineSearch size={24} />,
+        path: '/search',
+        icon: <AiOutlineSearch size={28} />,
       },
     ],
   },
@@ -86,13 +86,13 @@ export const sidebarData = [
     items: [
       {
         name: 'bookmarked',
-        path: 'bookmarked',
-        icon: <BsBookmarkHeart size={24} />,
+        path: '/bookmarked',
+        icon: <BsBookmarkHeart size={28} />,
       },
       {
         name: 'history',
-        path: 'history',
-        icon: <AiOutlineHistory size={24} />,
+        path: '/history',
+        icon: <AiOutlineHistory size={28} />,
       },
     ],
   },
@@ -101,8 +101,8 @@ export const sidebarData = [
     items: [
       {
         name: 'profile',
-        path: 'profile',
-        icon: <BiUserCircle size={24} />,
+        path: '/profile',
+        icon: <BiUserCircle size={28} />,
       },
     ],
   },

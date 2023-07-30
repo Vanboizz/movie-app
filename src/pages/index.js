@@ -39,63 +39,65 @@ export default function Home() {
         setType(localStorage.getItem('tab'));
       }
     }
-    Promise.all([
-      handleFetchData(`/3/${type}/popular`),
-      handleFetchData(`/3/${type}/top_rated`),
-      handleFetchData(`/3/trending/${type}/week`),
-      handleFetchData(`/3/genre/${type}/list`),
-      handleFetchData(`/3/tv/on_the_air`),
-      handleFetchData(`/3/movie/upcoming`),
-    ])
-      .then((response) => {
-        setPopular(
-          response[0].results.map((item) => ({
-            ...item,
-            name: item.name || item.title,
-            release_date: item.release_date || item.first_air_date,
-          })),
-        );
-        setTop_rated(
-          response[1].results.map((item) => ({
-            ...item,
-            name: item.name || item.title,
-            release_date: item.release_date || item.first_air_date,
-          })),
-        );
-        setTreding(
-          response[2].results.map((item) => ({
-            ...item,
-            name: item.name || item.title,
-            release_date: item.release_date || item.first_air_date,
-            genre_ids: handleGetGener(item.genre_ids, response[3].genres),
-          })),
-        );
-        setGenres(response[3].genres);
-        setOnTheAir(
-          response[4].results.map((item) => ({
-            ...item,
-            name: item.name || item.title,
-            release_date: item.release_date || item.first_air_date,
-          })),
-        );
-        setUpComing(
-          response[5].results.map((item) => ({
-            ...item,
-            name: item.name || item.title,
-            release_date: item.release_date || item.first_air_date,
-          })),
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (type) {
+      Promise.all([
+        handleFetchData(`/3/${type}/popular`),
+        handleFetchData(`/3/${type}/top_rated`),
+        handleFetchData(`/3/trending/${type}/week`),
+        handleFetchData(`/3/genre/${type}/list`),
+        handleFetchData(`/3/tv/on_the_air`),
+        handleFetchData(`/3/movie/upcoming`),
+      ])
+        .then((response) => {
+          setPopular(
+            response[0].results.map((item) => ({
+              ...item,
+              name: item.name || item.title,
+              release_date: item.release_date || item.first_air_date,
+            })),
+          );
+          setTop_rated(
+            response[1].results.map((item) => ({
+              ...item,
+              name: item.name || item.title,
+              release_date: item.release_date || item.first_air_date,
+            })),
+          );
+          setTreding(
+            response[2].results.map((item) => ({
+              ...item,
+              name: item.name || item.title,
+              release_date: item.release_date || item.first_air_date,
+              genre_ids: handleGetGener(item.genre_ids, response[3].genres),
+            })),
+          );
+          setGenres(response[3].genres);
+          setOnTheAir(
+            response[4].results.map((item) => ({
+              ...item,
+              name: item.name || item.title,
+              release_date: item.release_date || item.first_air_date,
+            })),
+          );
+          setUpComing(
+            response[5].results.map((item) => ({
+              ...item,
+              name: item.name || item.title,
+              release_date: item.release_date || item.first_air_date,
+            })),
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }, [type]);
 
   return (
-    <div>
+    <>
       <Head>
         <title>TbtWorld | Watch Films You Like</title>
         <meta name="description" content="Genered by create next app" />
@@ -166,6 +168,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { logo, sidebarData } from '@/constants';
 import { BiLogOut, BiLogIn } from 'react-icons/bi';
 import { UserAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/router';
 
 const Navbar = () => {
     const { user, logOut, setUser } = UserAuth()
-    let types;
-    const [type, setType] = useState(types)
+    const router = useRouter()
 
     const handleSignOut = async () => {
         try {
@@ -20,16 +20,6 @@ const Navbar = () => {
         }
     }
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (localStorage.getItem('nav') === null) {
-                setType('home');
-            }
-            if (localStorage.getItem('nav') !== null) {
-                setType(localStorage.getItem('nav'));
-            }
-        }
-    }, [])
 
     return (
         <div className={"w-[260px] pl-8 pt-10 sticky left-0 top-0"}>
@@ -51,14 +41,11 @@ const Navbar = () => {
                                 <div key={index} className='mt-8 ml-4 flex flex-col gap-4 text-[#989898]'>
                                     <Link
                                         href={value.path}
-                                        className={`${type === value.name ?
+                                        className={router.pathname === value.path ?
                                             "flex font-medium items-center gap-4 text-lg after:absolute after:right-0 after:bg-blue after:h-4 after:w-1.5 text-blue transition duration-300" :
                                             "flex gap-4"
-                                            }`}
-                                        onClick={() => {
-                                            setType(value.name);
-                                            localStorage.setItem('nav', value.name);
-                                        }}>
+                                        }
+                                    >
                                         {value.icon}
                                         <p>{value.name.charAt(0).toUpperCase() + value.name.slice(1)}</p>
                                     </Link>

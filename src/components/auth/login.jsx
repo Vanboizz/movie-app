@@ -83,7 +83,7 @@ const LoginComponent = () => {
                 }
             })
             .catch((error) => {
-                console.log(error);
+                toast("Email or Password have already errored")
             })
     }
 

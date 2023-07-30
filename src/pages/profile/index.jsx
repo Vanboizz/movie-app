@@ -240,7 +240,7 @@ const Profile = () => {
         )
     }
     else {
-        router.push(appRouter.login)
+        router.push(appRouter.home)
     }
 }
 
