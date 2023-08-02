@@ -2,19 +2,24 @@ import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { AiOutlineSearch } from 'react-icons/ai';
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md"
-import { tabs } from '@/constants';
+import { listSelectOptions, queryMovieDefault, tabs } from '@/constants';
 import Link from 'next/link';
 import { handleFetchData } from '@/helpers';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import RenderData from '@/components/base/renderData';
+import MovieList from '@/components/base/renderData/MovieList';
+import { useRouter } from 'next/router';
+import apiMovie from '@/apis/movie.api';
+import GenresList from '@/components/base/renderData/GenresList';
 
 const Explore = () => {
     // type
-    let types;
-    const [type, setType] = useState(types);
+    const [type, setType] = useState(queryMovieDefault.type);
+
+    // router
+    const router = useRouter()
 
     // selected
-    const [selected, setSelected] = useState("Most Popular")
+    const [selected, setSelected] = useState()
 
     //isOpenSort
     const [isOpenSort, setIsOpenSort] = useState(false)
@@ -22,11 +27,8 @@ const Explore = () => {
     //isOpenFilter
     const [isOpenFilter, setIsOpenFilter] = useState(false)
 
-    // no more
-    const [noMore, setNoMore] = useState(true)
-
     // page
-    const [page, setPage] = useState(2)
+    const [page, setPage] = useState(1)
 
     //genres
     const [genres, setGenres] = useState([]);
@@ -37,8 +39,13 @@ const Explore = () => {
     // loading
     const [loading, setLoading] = useState(false)
 
+    // date
+    const [date, setDate] = useState({
+        from: router.query.from || queryMovieDefault.from,
+        to: router.query.to || queryMovieDefault.to
+    })
+
     useEffect(() => {
-        setLoading(true)
         if (typeof window !== 'undefined') {
             if (localStorage.getItem('tab') === null) {
                 setType('tv');
@@ -47,41 +54,92 @@ const Explore = () => {
                 setType(localStorage.getItem('tab'));
             }
         }
-        if (type) {
-            Promise.all([
-                handleFetchData(`/3/discover/${type}?page=1`),
-                handleFetchData(`/3/genre/${type}/list`)
-            ])
-                .then((response) => {
-                    setGenres(response[1].genres)
-                    setDiscover(response[0].results.map((item) => ({
-                        ...item,
-                        name: item.name || item.title,
-                    })))
-                })
-                .catch(error => console.log(error))
-                .finally(() => {
-                    setLoading(false)
-                })
-        }
-    }, [type])
+        const sort_by = router.query.sort_by || queryMovieDefault.selected
+        const from = router.query.from || queryMovieDefault.from
+        const to = router.query.to || queryMovieDefault.to
 
-    const renderData = async () => {
-        const res = await handleFetchData(`/3/discover/${type}?page=${page}`)
-        const data = await res.results;
-        return data
+        setSelected(sort_by)
+        setDate({
+            ...date,
+            from: from,
+            to: to
+        })
+    }, [router.query])
+
+    //  Lần đầu tiên hoặc khi selected or type thay đổi chạy vào hàm này reset lại data
+    useEffect(() => {
+        setDiscover([])
+        setPage(1)
+        getListGenre()
+        getListMovie()
+        localStorage.setItem('tab', type)
+    }, [selected, type, date])
+
+    // fetch data genre
+    const getListGenre = async () => {
+        const response = await handleFetchData(`/3/genre/${type}/list`)
+        setGenres(response.genres)
     }
 
-    const connectData = async () => {
-        const filmsFormServer = await renderData()
+    const handleOnChangeSelected = (e) => {
+        e.preventDefault()
+        // giữ các query cũ và thêm query mới cho url
+        router.push({
+            query: {
+                ...router.query,
+                sort_by: e.target.value
+            },
+        })
+    }
 
-        setDiscover((prev) => [...prev, ...filmsFormServer])
+    const handleOnChangeDate = (e) => {
+        e.preventDefault()
+        // giữ các query cũ và thêm query mới cho url
+        router.push({
+            query: {
+                ...router.query,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
 
-        if (filmsFormServer.length === 0 || filmsFormServer.length < 20) {
-            setNoMore((prev) => !prev)
+    // lấy danh sách phim cho page đầu tiên
+    const getListMovie = async () => {
+        const query = {
+            page: 1,
+            selected,
+            type,
+            from: date.from,
+            to: date.to
         }
+        setLoading(true)
+        apiMovie.getListDiscover(query)
+            .then(response => {
+                setDiscover(response.data.results.map((item) => ({
+                    ...item,
+                    name: item.name || item.title,
+                })))
+            })
+            .catch(error => console.log(error))
+            .finally(() => setLoading(false))
+    }
 
-        setPage((prev) => prev + 1)
+    //  Khi scroll xuống cuối thì gọi hàm này fetch thêm data vô
+    const handleFetch = () => {
+        // Lấy page là trang tiếp theo 
+        const query = {
+            page: page + 1,
+            selected,
+            type,
+            from: date.from,
+            to: date.to
+        }
+        apiMovie.getListDiscover(query)
+            .then(response => {
+                setDiscover((prev) => [...prev, ...response.data.results])
+                setPage(page + 1)
+            })
+            .catch(error => console.log(error))
     }
 
     return (
@@ -126,18 +184,26 @@ const Explore = () => {
                         ))}
                     </div>
                     <InfiniteScroll
-                        dataLength={discover.length}
-                        next={connectData}
-                        hasMore={noMore}
-                        loader={<p className='text-white'>abc</p>}
+                        dataLength={discover && discover.length ? discover.length : 0}
+                        next={handleFetch}
+                        hasMore={true}
+                        loader={<p>123</p>}
                         endMessage={
                             <p className='text-center text-white'>
                                 <b>Yay! You have seen it all</b>
                             </p>
                         }
                     >
-                        {loading && <RenderData.Loading discover={discover}></RenderData.Loading>}
-                        {!loading && <RenderData discover={discover}></RenderData>}
+                        <div className='grid grid-cols-5 gap-4 mt-4' >
+                            {loading && discover.map((items, index) => (
+                                <MovieList.Loading key={index} />
+                            ))}
+                        </div>
+                        <div className='grid grid-cols-5 gap-4 mt-4' >
+                            {!loading && discover.map((items, index) => (
+                                <MovieList key={index} items={items} />
+                            ))}
+                        </div>
                     </InfiniteScroll>
                 </div>
                 <div className='col-span-1 pt-10 px-8'>
@@ -155,10 +221,13 @@ const Explore = () => {
                             !isOpenSort &&
                             <div className='py-3 border-t border-gray relative'>
                                 <p className='text-lg mb-2 text-[#cbd5e1] font-semibold'>Sort results by</p>
-                                <select value={selected} name="" id="" onChange={(e) => setSelected(e.target.value)} className='bg-[#49494B] outline-none text-md font-medium text-white p-2 rounded-md w-full'>
-                                    <option value="Most Popular">Most Popular</option>
-                                    <option value="Most Rating">Most Rating</option>
-                                    <option value="Most Recent">Most Recent</option>
+                                <select value={selected} name="" id=""
+                                    onChange={handleOnChangeSelected} className='bg-[#49494B] outline-none text-md font-medium text-white p-2 rounded-md w-full'>
+                                    {
+                                        listSelectOptions.map((item, index) => (
+                                            <option key={index} value={item.value}>{item.name}</option>
+                                        ))
+                                    }
                                 </select>
                                 <MdKeyboardArrowDown size={30} color='#cbd5e1' className='absolute top-16 right-0' />
                             </div>
@@ -181,13 +250,22 @@ const Explore = () => {
                                 <ul id='customize' className="flex gap-2 flex-wrap mt-8 max-h-[200px] overflow-y-auto">
                                     {
                                         genres.map((value, index) => (
-                                            <li className="bg-[#333335] text-[#989898] rounded-full px-2 py-1 border border-white hover:brightness-90 transition duration-300" key={index}>
-                                                <Link href="">{value.name}</Link>
-                                            </li>
+                                            <GenresList key={index} value={value} />
                                         ))
                                     }
                                 </ul>
                                 <p className='text-lg mt-4 text-[#cbd5e1] font-semibold'>Runtime</p>
+                                <p className='text-lg mt-4 text-[#cbd5e1] font-semibold'>Release Dates</p>
+                                <div className='flex flex-col gap-3 text-[#989898] mt-2'>
+                                    <div className='flex justify-between items-center'>
+                                        <label htmlFor="from" className='font-medium'>From:</label>
+                                        <input type="date" id='from' name='from' value={date.from} className='outline-none px-2 py-1 rounded-md bg-[#49494B]' onChange={handleOnChangeDate} />
+                                    </div>
+                                    <div className='flex justify-between items-center'>
+                                        <label htmlFor="to" className='font-medium'>To:</label>
+                                        <input type="date" id='to' name='to' value={date.to} className='outline-none px-2 py-1 rounded-md bg-[#49494B]' onChange={handleOnChangeDate} />
+                                    </div>
+                                </div>
                             </div>
                         }
                     </div>

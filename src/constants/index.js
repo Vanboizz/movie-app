@@ -107,3 +107,17 @@ export const sidebarData = [
     ],
   },
 ];
+
+export const listSelectOptions = [
+  { name: 'Most Popular', value: 'popularity.desc' },
+  { name: 'Most Rating', value: 'vote_average.desc' },
+  { name: 'Most Recent', value: 'release_date.desc' },
+];
+
+export const queryMovieDefault = {
+  PAGE: 1,
+  selected: 'popularity.desc',
+  type: 'tv',
+  from: '2022-02-02',
+  to: '2022-03-03',
+};
