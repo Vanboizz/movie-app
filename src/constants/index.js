@@ -120,4 +120,7 @@ export const queryMovieDefault = {
   type: 'tv',
   from: '2022-02-02',
   to: '2022-03-03',
+  genres: [],
+  min: 0,
+  max: 200,
 };

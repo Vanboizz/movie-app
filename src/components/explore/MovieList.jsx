@@ -6,6 +6,7 @@ import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
 
 const MovieList = (props) => {
     const { items } = props
+
     return (
         <Link href="">
             <div className='relative hover:scale-105 hover:brightness-110 duration-300'>

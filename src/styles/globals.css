@@ -12,6 +12,9 @@
   .style-error {
     @apply text-red font-bold flex;
   }
+  .style-li {
+    @apply bg-[#333335] cursor-pointer text-[#989898] rounded-full px-2 py-1 border border-white hover:brightness-90 transition duration-300;
+  }
 }
 
 .banner .swiper-button-prev {
@@ -74,4 +77,124 @@ select {
 #customize::-webkit-scrollbar-thumb {
   background-color: #111827;
   border: 2px solid #555555;
+}
+
+/* Range */
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: calc(16px + 1.6rem);
+}
+
+.input-wrapper {
+  width: calc(100% + 16px);
+  position: absolute;
+}
+
+.control-wrapper {
+  width: 100%;
+  position: absolute;
+}
+
+.input {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  height: 100%;
+  opacity: 0;
+  z-index: 3;
+  padding: 0;
+}
+.input::-ms-track {
+  appearance: none;
+  background: transparent;
+  border: transparent;
+}
+.input::-moz-range-track {
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: transparent;
+}
+.input:focus::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: transparent;
+}
+.input::-ms-thumb {
+  appearance: none;
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  border-radius: 0px;
+  border: 0 none;
+  cursor: grab;
+  background-color: red;
+}
+.input::-ms-thumb:active {
+  cursor: grabbing;
+}
+.input::-moz-range-thumb {
+  -moz-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  border-radius: 0px;
+  border: 0 none;
+  cursor: grab;
+  background-color: red;
+}
+.input::-moz-range-thumb:active {
+  cursor: grabbing;
+}
+.input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  border-radius: 0px;
+  border: 0 none;
+  cursor: -webkit-grab;
+  cursor: grab;
+  background-color: red;
+}
+.input::-webkit-slider-thumb:active {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+}
+
+.rail {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 3px;
+  background: lightgrey;
+}
+
+.inner-rail {
+  position: absolute;
+  height: 100%;
+  background: #5179ff;
+  right: 0;
+}
+
+.control {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  position: absolute;
+  background: #5179ff;
+  top: 50%;
+  margin-left: calc(16px / -2);
+  transform: translate3d(0, -50%, 0);
+  z-index: 2;
 }

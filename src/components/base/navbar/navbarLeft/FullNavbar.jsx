@@ -6,7 +6,7 @@ import { BiLogOut, BiLogIn } from 'react-icons/bi';
 import { UserAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/router';
 
-const Navbar = () => {
+const FullNavbar = () => {
     const { user, logOut, setUser } = UserAuth()
     const router = useRouter()
 
@@ -72,4 +72,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default FullNavbar;
