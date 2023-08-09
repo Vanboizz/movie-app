@@ -13,7 +13,7 @@ import { AiTwotoneStar } from 'react-icons/ai';
 import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
 
 const MovieSwiper = (props) => {
-    const { data, name } = props
+    const { type, data, name } = props
     return (
         <div className='max-w-[900px] movie'>
             <ul className="flex flex-col gap-10 mt-10">
@@ -45,9 +45,11 @@ const MovieSwiper = (props) => {
                 className="mySwiper"
             >
                 {
-                    data.map((value, i) => (
-                        <SwiperSlide key={i}>
-                            <Link href="">
+                    data.map((value) => (
+                        <SwiperSlide key={value.id}>
+                            <Link href={{
+                                pathname: `/${type}/${value.id}`,
+                            }}>
                                 <div className='hover:scale-105 transition duration-300'>
                                     <div className="absolute top-1 left-2 bg-blue flex items-center gap-0.5 px-1 py-0.5 rounded-xl">
                                         <span className="text-white text-xs">{value.vote_average}</span>

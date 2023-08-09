@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
             <div className='flex items-start'>
                 <div className='bg-gray h-full w-full top-0 fixed -z-10'></div>
                 {
-                    router.asPath.includes(appRouter.explore) ? <CollapseNavbar /> : <FullNavbar />
+                    router.asPath.includes(appRouter.explore) || router.asPath.includes(router.query.movieid) ? <CollapseNavbar /> : <FullNavbar />
                 }
                 <main className='flex-1'>{children}</main>
             </div>

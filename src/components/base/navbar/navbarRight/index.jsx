@@ -4,9 +4,15 @@ import { BiDotsVerticalRounded } from 'react-icons/bi';
 import Link from 'next/link';
 import Image from 'next/image';
 import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
+import { useRouter } from 'next/router';
+import { appRouter } from '@/constants';
 
 const Filter = (props) => {
-    const { data, trending } = props
+    const { data, trending, type } = props
+    const router = useRouter()
+    const navigatePage = () => {
+        router.push(appRouter.explore)
+    }
     return (
         <div className="max-w-[310px] w-full p-4 top-0 sticky right-0">
             <div>
@@ -37,12 +43,14 @@ const Filter = (props) => {
                 </p>
                 <ul className="flex flex-col gap-5">
                     {
-                        trending.slice(0, 2).map((value, index) => (
+                        trending.slice(0, 2).map((trend, index) => (
                             <li key={index}>
-                                <Link href="" className="flex gap-3 items-start">
+                                <Link href={{
+                                    pathname: `/${type}/${trend.id}`,
+                                }} className="flex gap-3 items-start hover:brightness-75 transition duration-300">
                                     <div>
                                         <Image
-                                            src={`https://image.tmdb.org/t/p/w154${value.poster_path}`}
+                                            src={`https://image.tmdb.org/t/p/w154${trend.poster_path}`}
                                             width={100}
                                             height={150}
                                             alt="image"
@@ -50,10 +58,10 @@ const Filter = (props) => {
                                         />
                                     </div>
                                     <div className="flex-grow">
-                                        <p className="text-white text-lg mb-3">The Super Mario Bros. Movie</p>
-                                        <p className="mb-4 text-[#989898]">{value.release_date}</p>
+                                        <p className="text-white text-lg mb-3">{trend.name}</p>
+                                        <p className="mb-4 text-[#989898]">{trend.release_date}</p>
                                         <div className="absolute border border-blue flex items-center gap-1 px-1 py-0.5 rounded-xl">
-                                            <span className="text-blue">{value.vote_average}</span>
+                                            <span className="text-blue">{trend.vote_average}</span>
                                             <AiTwotoneStar className="text-blue" />
                                         </div>
                                     </div>
@@ -64,7 +72,7 @@ const Filter = (props) => {
 
                 </ul>
             </div>
-            <button className='bg-[#333335] w-full mt-12 py-1 rounded-full text-[#989898]'>See more</button>
+            <button className='bg-[#333335] w-full mt-12 py-1 rounded-full text-white hover:brightness-90 transition duration-300' onClick={navigatePage}>See more</button>
         </div>
     );
 };

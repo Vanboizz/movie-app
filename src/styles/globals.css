@@ -17,6 +17,12 @@
   }
 }
 
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+}
+
 .banner .swiper-button-prev {
   position: absolute !important;
   top: 28px !important;
@@ -49,6 +55,10 @@
 
 .background {
   background: linear-gradient(270deg, transparent, rgba(0, 0, 0, 0.85) 95%);
+}
+
+.gradient {
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
 }
 
 /* skeleton */
@@ -197,4 +207,12 @@ select {
   margin-left: calc(16px / -2);
   transform: translate3d(0, -50%, 0);
   z-index: 2;
+}
+
+.content {
+  display: none;
+}
+
+.show-content {
+  display: block;
 }

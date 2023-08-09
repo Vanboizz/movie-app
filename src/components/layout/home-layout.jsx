@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link';
 import Image from 'next/image';
 import BannerSwiper from '@/components/base/swiper/BannerSwiper';
 import { logo, tabs } from '@/constants';
@@ -128,24 +127,24 @@ const HomeLayout = () => {
                         {loading && <BannerSwiper.Loading></BannerSwiper.Loading>}
                         {!loading && <BannerSwiper trending={trending}></BannerSwiper>}
                         {loading && <MovieSwiper.Loading data={popular}></MovieSwiper.Loading>}
-                        {!loading && <MovieSwiper data={popular} name="Popular"></MovieSwiper>}
+                        {!loading && <MovieSwiper type={type} data={popular} name="Popular"></MovieSwiper>}
                         {loading && <MovieSwiper.Loading data={top_rated}></MovieSwiper.Loading>}
-                        {!loading && <MovieSwiper data={top_rated} name="Top Rated"></MovieSwiper>}
+                        {!loading && <MovieSwiper type={type} data={top_rated} name="Top Rated"></MovieSwiper>}
                         {type === 'tv' ? (
                             <>
                                 {loading && <MovieSwiper.Loading data={onTheAir}></MovieSwiper.Loading>}
-                                {!loading && <MovieSwiper data={onTheAir} name="On The Air"></MovieSwiper>}
+                                {!loading && <MovieSwiper type={type} data={onTheAir} name="On The Air"></MovieSwiper>}
                             </>
                         ) : (
                             <>
                                 {loading && <MovieSwiper.Loading data={upComing}></MovieSwiper.Loading>}
-                                {!loading && <MovieSwiper data={upComing} name="Up Coming"></MovieSwiper>}
+                                {!loading && <MovieSwiper type={type} data={upComing} name="Up Coming"></MovieSwiper>}
                             </>
                         )}
                     </div>
                     <div>
                         {loading && <Filter.Loading data={genres} trending={trending} />}
-                        {!loading && <Filter data={genres} trending={trending} />}
+                        {!loading && <Filter data={genres} trending={trending} type={type} />}
                     </div>
                 </div>
             </main>

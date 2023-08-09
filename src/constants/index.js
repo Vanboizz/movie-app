@@ -19,6 +19,9 @@ export const arrayImages = [
 // Logo
 export const logo = '/assest/images/logo.png';
 
+// backround
+export const background = '/assest/images/background.jpg';
+
 // router
 export const appRouter = {
   login: '/login',
@@ -124,3 +127,5 @@ export const queryMovieDefault = {
   min: 0,
   max: 200,
 };
+
+export const tabsDetailMovie = ['Overall', 'Cast', 'Reviews', 'Seasons'];
