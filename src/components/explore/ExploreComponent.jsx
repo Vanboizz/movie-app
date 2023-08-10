@@ -74,11 +74,6 @@ const ExploreComponent = () => {
         localStorage.setItem('tab', type)
     }, [selected, type, date, runtime])
 
-    useEffect(() => {
-        setSelection([])
-        localStorage.setItem('tab', type)
-    }, [type])
-
     // fetch data genre
     const getListGenre = async () => {
         const response = await handleFetchData(`/3/genre/${type}/list`)
@@ -205,7 +200,7 @@ const ExploreComponent = () => {
                             <Tab key={index} tab={tab} type={type} setType={setType} />
                         ))}
                     </div>
-                    <InfiniteScrollData discover={discover} handleFetch={handleFetch} loading={loading} />
+                    <InfiniteScrollData type={type} discover={discover} handleFetch={handleFetch} loading={loading} />
                 </div>
                 <div className='col-span-1 pt-10 px-8'>
                     <div className='bg-[#333335] px-4 pt-3 rounded-md shadow-md'>

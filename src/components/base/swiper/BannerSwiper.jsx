@@ -17,11 +17,12 @@ import Image from 'next/image';
 
 import { AiTwotoneStar } from 'react-icons/ai';
 import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
+import { BsFillPlayFill } from "react-icons/bs"
 
 const BannerSwiper = (props) => {
-    const { trending } = props
+    const { type, trending } = props
     return (
-        <div className="mt-4 max-w-[900px] banner">
+        <div className="mt-4 max-w-[900px] banner group">
             <Swiper
                 speed={600}
                 parallax={true}
@@ -36,7 +37,9 @@ const BannerSwiper = (props) => {
                 {
                     trending.map((value, index) => (
                         <SwiperSlide key={index}>
-                            <Link href="">
+                            <Link href={{
+                                pathname: `/${type}/${value.id}`,
+                            }}>
                                 <div className="absolute w-full h-full top-0 left-0 background"></div>
                                 <Image
                                     src={`https://image.tmdb.org/t/p/w1280${value.backdrop_path}`}
@@ -49,6 +52,10 @@ const BannerSwiper = (props) => {
                                     <div className="absolute top-3 right-5 bg-blue flex items-center gap-1 px-1 py-0.5 rounded-xl">
                                         <span className="text-white">{value.vote_average}</span>
                                         <AiTwotoneStar color="white" />
+                                    </div>
+                                    <div className='absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2
+                                    w-16 h-16 rounded-full bg-gradient-to-br from-blue to-[#c353b4] flex items-center invisible group-hover:visible justify-center duration-700'>
+                                        <BsFillPlayFill size={40} className='text-white' />
                                     </div>
                                     <h1 className="text-blue absolute top-10 left-6 text-5xl font-bold w-[500px] flex-wrap">
                                         {value.name}
@@ -67,7 +74,7 @@ const BannerSwiper = (props) => {
                                         }
 
                                     </ul>
-                                    <span className="absolute top-44 left-6 text-[#989898] mt-24 w-[500px] flex flex-wrap">
+                                    <span className="absolute top-44 left-6 text-[#989898] mt-24 w-[500px] flex flex-wrap t-ellipsis-4 ">
                                         {value.overview}
                                     </span>
                                 </div>

@@ -8,7 +8,7 @@ const ContentCredits = (props) => {
         <li className='flex gap-3 items-center'>
             <div>
                 <Image
-                    src={`https://image.tmdb.org/t/p/w185${credit.profile_path}` || background}
+                    src={`https://image.tmdb.org/t/p/w185${credit.profile_path || '/jPxfJDndAVcIP3rz6UR7vQZxb4j.jpg'}`}
                     width={1000}
                     height={0}
                     className='w-16 h-16 rounded-full'

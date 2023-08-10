@@ -125,7 +125,7 @@ const HomeLayout = () => {
                 <div className="flex">
                     <div>
                         {loading && <BannerSwiper.Loading></BannerSwiper.Loading>}
-                        {!loading && <BannerSwiper trending={trending}></BannerSwiper>}
+                        {!loading && <BannerSwiper type={type} trending={trending}></BannerSwiper>}
                         {loading && <MovieSwiper.Loading data={popular}></MovieSwiper.Loading>}
                         {!loading && <MovieSwiper type={type} data={popular} name="Popular"></MovieSwiper>}
                         {loading && <MovieSwiper.Loading data={top_rated}></MovieSwiper.Loading>}

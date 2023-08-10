@@ -4,6 +4,7 @@ import { totalEpisodes, totalSeason } from '@/helpers'
 
 const Seasons = (props) => {
     const { detailMovie } = props
+
     const sumSeason = totalSeason(detailMovie)
     const sumEpisodes = totalEpisodes(detailMovie)
 
@@ -15,7 +16,7 @@ const Seasons = (props) => {
             </div>
             <ul id='customize' className='max-h-[400px] overflow-y-auto flex flex-col gap-8 pr-4'>
                 {
-                    detailMovie.seasons.length !== 0 ?
+                    detailMovie.seasons && detailMovie.seasons.length !== 0 ?
                         detailMovie.seasons.map((season, index) => (
                             <Episodes key={index} season={season} />
                         ))

@@ -26,7 +26,7 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
   return (
     <>
       <Head>
-        <title>{detailMovie.name} | TbtWorld</title>
+        <title>{detailMovie.original_name || detailMovie.original_title} | TbtWorld</title>
         <meta name='description' content='Web devlopment' />
       </Head>
       <div className='grid grid-cols-5 bg-gray'>
@@ -66,13 +66,18 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
                 />
               </div>
               <div className='ml-16'>
-                <h1 className='text-white text-4xl font-bold mt-6'>{detailMovie.name}</h1>
+                <h1 className='text-white text-4xl font-bold mt-6'>{detailMovie.original_name || detailMovie.original_title}</h1>
                 <ul className='flex gap-3 flex-wrap item mt-5'>
                   {
                     detailMovie.genres.slice(0, 3).map(genre => (
                       <li key={genre.id} className='mb-3'>
-                        <Link href="" className='px-3 py-1 rounded-full uppercase font-medium border border-white text-white 
-                        hover:brightness-75 transition duration-300'>{genre.name}</Link>
+                        <Link href={{
+                          pathname: '/explore',
+                          query: { genre: genre.id }
+                        }} className='px-3 py-1 rounded-full uppercase font-medium border border-white text-white 
+                        hover:brightness-75 transition duration-300'>
+                          {genre.name}
+                        </Link>
                       </li>
                     ))
                   }
@@ -94,12 +99,22 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
             <div className='mt-20 pt-16 border-r border-[#3f3f46] w-full max-w-[120px] flex flex-col gap-16'>
               <div className='flex flex-col items-center gap-6'>
                 <p className='text-white font-medium text-lg'>RATING</p>
-                <p className='text-white'>{detailMovie.vote_average}</p>
+                <div className='progress-bar flex justify-center items-center w-16 h-16 rounded-full'>
+                  <progress
+                    value={detailMovie.vote_average}
+                    min="0"
+                    max="100"
+                    className='invisible h-0 w-0'
+                  >
+                    {detailMovie.vote_average}
+                  </progress>
+                  <span className='text-white text-sm font-base'>{detailMovie.vote_average}</span>
+                </div>
               </div>
               <div className='flex flex-col items-center gap-3'>
                 <p className='text-white font-medium text-lg'>EP LENGTH</p>
                 <div className='flex gap-2 justify-center items-center'>
-                  <p className='text-[#989898] text-2xl'>{detailMovie.episode_run_time[0]}</p>
+                  <p className='text-[#989898] text-2xl'>{detailMovie.episode_run_time && detailMovie.episode_run_time[0]}</p>
                   <span className='text-[#989898]'>min</span>
                 </div>
               </div>
@@ -139,9 +154,9 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
             </div>
             <div className='w-full max-w-[300px] px-4 pt-2'>
               <p className='text-white font-medium text-xl'>MEDIA</p>
-              <ul id='customize' className='mt-4  max-h-[400px] overflow-y-auto flex flex-col gap-4 pr-4'>
+              <ul id='customize' className='mt-4  flex flex-col gap-4 '>
                 {
-                  videosMovie.results.length !== 0 ? videosMovie.results.map((video, index) => (
+                  videosMovie.results.length !== 0 ? videosMovie.results.slice(0, 2).map((video, index) => (
                     <Videos key={index} video={video} />
                   )) :
                     <p className='text-white text-lg mt-10 text-center'>There is no videos yet.</p>
@@ -171,7 +186,7 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
             <ul className="flex flex-col gap-5">
               {
                 similarMovie.results.slice(0, 4).map((similar, index) => (
-                  <Similar key={index} similar={similar} type={type} />
+                  <Similar key={index} similar={similar} />
                 ))
               }
             </ul>
@@ -185,19 +200,25 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
 
 export const getServerSideProps = async (context) => {
   const movieid = context.params.movieid
-  const tab = context.params.tab
+  const type = context.params.tab
   const query = {
     movieid,
-    tab
+    type
   }
-
   if (!query.movieid) {
     return {
       notFound: true
     }
   }
   const [detailMovie, creditsMovie, reviewsMovie, videosMovie, similarMovie] =
-    await Promise.all([apiMovie.getDetailMovie(query), apiMovie.getCredits(query), apiMovie.getReviews(query), apiMovie.getVideos(query), apiMovie.getSimilar(query)])
+    await Promise.all(
+      [
+        apiMovie.getDetailMovie(query),
+        apiMovie.getCredits(query),
+        apiMovie.getReviews(query),
+        apiMovie.getVideos(query),
+        apiMovie.getSimilar(query)
+      ])
   return {
     props: {
       detailMovie: detailMovie.data,

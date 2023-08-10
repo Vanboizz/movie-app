@@ -30,8 +30,11 @@ const Filter = (props) => {
             <ul className="flex gap-2 flex-wrap mt-8">
                 {
                     data.slice(0, 5).map((value, index) => (
-                        <li className="bg-[#333335] text-[#989898] rounded-full px-2 py-1" key={index}>
-                            <Link href="">{value.name}</Link>
+                        <li className="bg-[#404040] text-[#989898] brightness-90 transition duration-300 rounded-full px-2 py-1" key={index}>
+                            <Link href={{
+                                pathname: '/explore',
+                                query: { genre: value.id }
+                            }} >{value.name}</Link>
                         </li>
                     ))
                 }
@@ -47,20 +50,20 @@ const Filter = (props) => {
                             <li key={index}>
                                 <Link href={{
                                     pathname: `/${type}/${trend.id}`,
-                                }} className="flex gap-3 items-start hover:brightness-75 transition duration-300">
-                                    <div>
+                                }} className="flex gap-4 items-center hover:brightness-75 transition duration-300">
+                                    <div className='shrink-0'>
                                         <Image
                                             src={`https://image.tmdb.org/t/p/w154${trend.poster_path}`}
                                             width={100}
                                             height={150}
                                             alt="image"
-                                            className="rounded-lg max-w-none"
+                                            className="rounded-lg "
                                         />
                                     </div>
                                     <div className="flex-grow">
-                                        <p className="text-white text-lg mb-3">{trend.name}</p>
-                                        <p className="mb-4 text-[#989898]">{trend.release_date}</p>
-                                        <div className="absolute border border-blue flex items-center gap-1 px-1 py-0.5 rounded-xl">
+                                        <p className="text-white text-lg t-ellipsis-2 mb-3">{trend.name}</p>
+                                        <p className=" text-[#989898] mb-4">{trend.release_date}</p>
+                                        <div className=" border border-blue inline-flex items-center gap-1 px-1 py-0.5 rounded-xl">
                                             <span className="text-blue">{trend.vote_average}</span>
                                             <AiTwotoneStar className="text-blue" />
                                         </div>

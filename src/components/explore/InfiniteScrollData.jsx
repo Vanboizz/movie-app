@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import MovieList from './MovieList';
 
 const InfiniteScrollData = (props) => {
-    const { discover, handleFetch, loading } = props
+    const { type, discover, handleFetch, loading } = props
 
     return (
         <InfiniteScroll
@@ -24,7 +24,7 @@ const InfiniteScrollData = (props) => {
             </div>
             <div className='grid grid-cols-5 gap-4 mt-4' >
                 {!loading && discover.map((items, index) => (
-                    <MovieList key={index} items={items} />
+                    <MovieList key={index} type={type} items={items} />
                 ))}
             </div>
         </InfiniteScroll>

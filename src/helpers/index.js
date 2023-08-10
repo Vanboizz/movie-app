@@ -21,17 +21,23 @@ export const handleGetGener = (genre_ids, data) => {
 
 // total season
 export const totalSeason = (detailMovie) => {
-  return detailMovie.seasons.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.season_number,
-    0,
+  return (
+    detailMovie.seasons &&
+    detailMovie.seasons.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.season_number,
+      0,
+    )
   );
 };
 
 // total episodes
 export const totalEpisodes = (detailMovie) => {
-  return detailMovie.seasons.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.episode_count,
-    0,
+  return (
+    detailMovie.seasons &&
+    detailMovie.seasons.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.episode_count,
+      0,
+    )
   );
 };
 

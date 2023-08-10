@@ -5,10 +5,11 @@ import { AiTwotoneStar } from 'react-icons/ai';
 import LoadingSkeleton from '@/components/base/loading/LoadingSkeleton';
 
 const MovieList = (props) => {
-    const { items } = props
-
+    const { type, items } = props
     return (
-        <Link href="">
+        <Link href={{
+            pathname: `/${type}/${items.id}`,
+        }}>
             <div className='relative hover:scale-105 hover:brightness-110 duration-300'>
                 <div className="absolute top-2 left-2 bg-blue flex items-center gap-0.5 px-1 py-0.5 rounded-xl">
                     <span className="text-white text-xs">{items.vote_average}</span>
