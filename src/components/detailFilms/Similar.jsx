@@ -2,16 +2,13 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { AiTwotoneStar } from "react-icons/ai"
-import { useRouter } from 'next/router'
 
 const Similar = (props) => {
-  const { similar } = props
-  const router = useRouter()
-  const type = router.query.tab
+  const { similar, tab } = props
   return (
     <li>
       <Link href={{
-        pathname: `/${type}/${similar.id}`,
+        pathname: `/${tab}/${similar.id}`,
       }} className="flex gap-4 items-center hover:brightness-75 transition duration-300">
         <div className='shrink-0'>
           <Image

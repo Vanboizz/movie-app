@@ -15,7 +15,7 @@ import Poster from '@/components/detailFilms/Poster';
 import TabsDetailMovie from '@/components/detailFilms/TabsDetailMovie';
 import ScoreRated from '@/components/detailFilms/ScoreRated';
 
-const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, similarMovie }) => {
+const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, similarMovie, id, tab }) => {
   const [type, setType] = useState("Overall")
   const router = useRouter()
 
@@ -31,7 +31,7 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
       </Head>
       <div className='grid grid-cols-5 bg-gray'>
         <div className='col-span-4'>
-          <Poster detailMovie={detailMovie} />
+          <Poster detailMovie={detailMovie} tab={tab} id={id} />
           <div className='flex relative'>
             <ScoreRated detailMovie={detailMovie} />
             <div className='flex-grow px-12 flex-1 border-r border-[#3f3f46]'>
@@ -89,7 +89,7 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
             <ul className="flex flex-col gap-5">
               {
                 similarMovie.results.slice(0, 4).map((similar, index) => (
-                  <Similar key={index} similar={similar} />
+                  <Similar key={index} similar={similar} tab={tab} />
                 ))
               }
             </ul>
@@ -102,13 +102,13 @@ const MovieDetail = ({ detailMovie, creditsMovie, reviewsMovie, videosMovie, sim
 }
 
 export const getServerSideProps = async (context) => {
-  const movieid = context.params.movieid
-  const type = context.params.tab
+  const id = context.params.id
+  const tab = context.params.tab
   const query = {
-    movieid,
-    type
+    id,
+    tab
   }
-  if (!query.movieid) {
+  if (!query.id) {
     return {
       notFound: true
     }
@@ -128,7 +128,9 @@ export const getServerSideProps = async (context) => {
       creditsMovie: creditsMovie.data.cast,
       reviewsMovie: reviewsMovie.data,
       videosMovie: videosMovie.data,
-      similarMovie: similarMovie.data
+      similarMovie: similarMovie.data,
+      id: id,
+      tab: tab
     }
   }
 }

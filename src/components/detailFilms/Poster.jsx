@@ -7,8 +7,7 @@ import { background } from '@/constants';
 import Link from 'next/link'
 
 const Poster = (props) => {
-    const { detailMovie } = props
-
+    const { detailMovie, tab, id } = props
     return (
         <div className='relative'>
             <div className="absolute w-full h-full top-0 left-0 gradient"></div>
@@ -64,7 +63,9 @@ const Poster = (props) => {
                 </div>
                 <div className='ml-auto'>
                     <Link
-                        href=""
+                        href={{
+                            pathname: `/watch/${tab}/${id}`,
+                        }}
                         className='flex gap-3 items-center px-5 py-2 rounded-full bg-blue
           text-white mt-20 hover:bg-[#2563EB] transition duration-300'
                     >

@@ -17,28 +17,33 @@ const apiMovie = {
     return axiosClient.get(url);
   },
   getDetailMovie: async (query) => {
-    const { type = queryMovieDefault.type, movieid } = query;
-    const url = `/3/${type}/${movieid}?api_key=${process.env.customKey}`;
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
   getCredits: async (query) => {
-    const { type = queryMovieDefault.type, movieid } = query;
-    const url = `/3/${type}/${movieid}/credits?api_key=${process.env.customKey}`;
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}/credits?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
   getReviews: async (query) => {
-    const { type = queryMovieDefault.type, movieid } = query;
-    const url = `/3/${type}/${movieid}/reviews?api_key=${process.env.customKey}`;
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}/reviews?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
   getVideos: async (query) => {
-    const { type = queryMovieDefault.type, movieid } = query;
-    const url = `/3/${type}/${movieid}/videos?api_key=${process.env.customKey}`;
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}/videos?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
   getSimilar: async (query) => {
-    const { type = queryMovieDefault.type, movieid } = query;
-    const url = `/3/${type}/${movieid}/similar?api_key=${process.env.customKey}`;
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}/similar?api_key=${process.env.customKey}`;
+    return axiosClient.get(url);
+  },
+  getSeason: async (query, seasonNumber) => {
+    const { tab = queryMovieDefault.type, id } = query;
+    const url = `/3/${tab}/${id}/season/${seasonNumber}?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
 };
