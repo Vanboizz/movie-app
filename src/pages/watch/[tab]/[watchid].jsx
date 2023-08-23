@@ -1,16 +1,57 @@
 import apiMovie from '@/apis/movie.api'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineSearch, AiFillStar, AiTwotoneCalendar } from "react-icons/ai"
-import { BiDotsVerticalRounded } from "react-icons/bi"
+import { BiDotsVerticalRounded, BiSolidSend } from "react-icons/bi"
 import Season from '@/components/watchFilms/Season'
 import Link from 'next/link'
 import moment from 'moment'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
+import { UserAuth } from '@/hooks/useAuth'
+import { Timestamp, collection, doc, getDocs, setDoc } from 'firebase/firestore'
+import { db } from '@/firebase'
+import { uuid } from 'uuidv4';
+import ListComment from '@/components/watchFilms/ListComment'
 
 const Watch = ({ detailMovie, season, id, tab }) => {
     const router = useRouter()
+    const { user } = UserAuth()
     const querySeason = router.query.season || 0
     const queryEpisode = router.query.episode || 0
+    const [comment, setComment] = useState('')
+    const [comments, setComments] = useState([])
+
+    useEffect(() => {
+        const getDataComment = async () => {
+            const querySnapshot = await getDocs(collection(db, "comments", id, "comment"))
+            const listComment = []
+            querySnapshot.forEach(doc => {
+                listComment.push({
+                    ...doc.data(),
+                    id: doc.id
+                })
+            })
+            setComments(listComment)
+        }
+        getDataComment()
+    }, [comment])
+
+    const handleWriteComment = async (e, comment) => {
+        e.preventDefault()
+        setComment("")
+        let temp = {
+            comment,
+            idComments: uuid(),
+            idUser: user.uid,
+            photoURL: user.photoURL,
+            displayName: user.displayName,
+            createdAt: Timestamp.fromDate(new Date()),
+            updateAt: null,
+            parent_id: null
+        }
+        const docRef = doc(collection(db, "comments", id, "comment"))
+        await setDoc(docRef, temp)
+    }
 
     return (
         <div className='grid grid-cols-4 pt-6'>
@@ -69,6 +110,50 @@ const Watch = ({ detailMovie, season, id, tab }) => {
                     <span className='text-lg mt-1 text-[#989898]'>
                         {season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].overview}
                     </span>
+                </div>
+                <div className='my-8'>
+                    <div className='flex items-center justify-between'>
+                        <div className='relative '>
+                            <p className='text-2xl text-white font-medium'>Comments</p>
+                            <p className='absolute left-28 top-0 bg-[#333335] w-3 h-3 text-sm rounded-full flex justify-center items-center text-white'>2</p>
+                        </div>
+                        <div className='flex'>
+                            <button className=' border border-[#4b5563] px-3 py-1 rounded-l-xl hover:text-white bg-[#333335] transition duration-300 text-white'>Latest</button>
+                            <button className=' border border-[#4b5563] px-3 py-1 rounded-r-xl hover:text-white bg-[#1C1C1E] transition duration-300 text-[#989898]'>Popular</button>
+                        </div>
+                    </div>
+                    <div className='px-1'>
+                        <div className='my-5'>
+                            <form action="" onSubmit={(e) => handleWriteComment(e, comment)} className='flex gap-4 items-center'>
+                                {user && user.photoURL && (
+                                    <Image
+                                        className="rounded-full w-10 h-10 shrink-0 object-cover"
+                                        src={user.photoURL}
+                                        width={200}
+                                        height={28}
+                                        alt="user"
+                                    />
+                                )}
+                                <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} className='py-2 flex-1 bg-[#333335] outline-none rounded-full px-4 text-white' placeholder='Write comment...' required />
+                                <button type='submit'>
+                                    <BiSolidSend size={30} className='text-blue' />
+                                </button>
+                            </form>
+                            <ul className='mt-5'>
+                                {
+                                    comments.map((item, index) => (
+                                        <>
+                                            {
+                                                item.parent_id === null &&
+                                                <ListComment key={index} item={item} user={user} id={id} />
+                                            }
+
+                                        </>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className='col-span-1 px-4'>
