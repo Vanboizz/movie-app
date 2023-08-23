@@ -15,6 +15,9 @@ import { renderAvatar } from '@/helpers';
 import { appRouter, inputType, schemaRegister } from '@/constants';
 import InputText from '@/components/base/form/InputText';
 import InputPassword from '@/components/base/form/InputPassword';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const RegisterComponent = () => {
     // router
@@ -56,12 +59,12 @@ const RegisterComponent = () => {
     }
 
     // onSubmit form
-    const onSubmit = (data, e) => {
-        e.preventDefault()
+    const onSubmit = (data) => {
         createUserWithEmailAndPassword(auth, data.email, data.password)
             .then((credential) => {
+                toast("Sign up is successful")
                 setDoc(doc(db, "user", credential?.user.uid), {
-                    displayName: data.firstname,
+                    displayName: data.firstname + data.lastname,
                     email: data.email,
                     photoURL: renderAvatar()
                 })
@@ -74,6 +77,7 @@ const RegisterComponent = () => {
 
     return (
         <>
+            <ToastContainer />
             <Video />
             <div className='relative'>
                 <div className='absolute w-[448px] top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[16%]'>
@@ -111,26 +115,30 @@ const RegisterComponent = () => {
                                 icon={<BiUserCircle size={24} className="style-icon" />}
                             />
                         </div>
-                        <InputText
-                            name={inputType.EMAIL}
-                            register={register}
-                            handleChange={e => handleChange(e)}
-                            errors={errors}
-                            state={formValue.email}
-                            icon={<AiOutlineMail size={24} className='style-icon' />}
-                        />
-                        <InputPassword
-                            type={passwordType}
-                            name={inputType.PASSWORD}
-                            register={register}
-                            handleChange={e => handleChange(e)}
-                            errors={errors}
-                            state={formValue.password}
-                            passwordType={passwordType}
-                            togglePassword={togglePassword}
-                            eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
-                            eye={<AiOutlineEye size={24} className="style-icon" />}
-                        />
+                        <div>
+                            <InputText
+                                name={inputType.EMAIL}
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.email}
+                                icon={<AiOutlineMail size={24} className='style-icon' />}
+                            />
+                        </div>
+                        <div>
+                            <InputPassword
+                                type={passwordType}
+                                name={inputType.PASSWORD}
+                                register={register}
+                                handleChange={e => handleChange(e)}
+                                errors={errors}
+                                state={formValue.password}
+                                passwordType={passwordType}
+                                togglePassword={togglePassword}
+                                eyeInvisible={<AiOutlineEyeInvisible size={24} className="style-icon" />}
+                                eye={<AiOutlineEye size={24} className="style-icon" />}
+                            />
+                        </div>
                         <div className='text-center mt-4'>
                             <button type='submit' className='px-12 py-3 font-bold rounded-full text-lg text-white uppercase 
                             bg-blue hover:bg-[#4161cc] transition duration-300'>

@@ -16,7 +16,7 @@ const InputText = (props) => {
                 id={name}
                 autoComplete="off"
                 name={name}
-                className="w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer"
+                className="w-full rounded-lg h-12 px-3 text-zinc bg-gray outline-none peer selection:text-blue"
                 {...register(name)}
                 onChange={handleChange}
             />
