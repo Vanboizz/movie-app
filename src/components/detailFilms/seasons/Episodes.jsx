@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 const Episodes = (props) => {
     const { season } = props
+
     return (
         <li >
             <div className='flex gap-3 items-center'>

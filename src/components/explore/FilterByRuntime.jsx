@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 
 const FilterByRuntime = (props) => {
     const { min, max, runtime, step, setRuntime } = props
@@ -7,7 +7,7 @@ const FilterByRuntime = (props) => {
     const [maxValue, setMaxValue] = useState(runtime ? runtime.max : max);
     const router = useRouter()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (runtime) {
             setMinValue(runtime.min);
             setMaxValue(runtime.max);

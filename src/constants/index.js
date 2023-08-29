@@ -2,14 +2,11 @@ import * as yup from 'yup';
 import {
   AiOutlineHome,
   AiOutlineSearch,
-  AiOutlineHistory,
-  AiFillLike,
-  AiFillHeart,
+  AiOutlineHistory
 } from 'react-icons/ai';
 import { MdOutlineExplore } from 'react-icons/md';
 import { BiUserCircle } from 'react-icons/bi';
-import { BsBookmarkHeart, BsFillEmojiLaughingFill } from 'react-icons/bs';
-import { FaSadTear, FaAngry } from 'react-icons/fa';
+import { BsBookmarkHeart } from 'react-icons/bs';
 
 // array images
 export const arrayImages = [
@@ -44,18 +41,18 @@ export const schemaRegister = yup.object().shape({
   firstname: yup.string().required('First name is required'),
   lastname: yup.string().required('Last name is required'),
   email: yup.string().email('Email is not valid').required('Email is required'),
-  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+  password: yup.string().required('Password is required').min(8, 'Your password must be more 8 characters'),
 });
 
 // schema password
 export const schemaPassword = yup.object().shape({
-  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+  password: yup.string().required('Password is required').min(8, 'Your password must be more 8 characters'),
 });
 
 // schema login
 export const schemaLogin = yup.object().shape({
   email: yup.string().email('Email is not valid').required('Email is required'),
-  password: yup.string().required('Password is required').min(8, 'Your password is too short'),
+  password: yup.string().required('Password is required').min(8, 'Your password must be more 8 characters'),
 });
 
 // type
@@ -137,75 +134,5 @@ export const queryMovieDefault = {
 
 export const tabsDetailMovie = ['Overall', 'Cast', 'Reviews', 'Seasons'];
 
-// list Reaction
-export const listReaction = [
-  {
-    button: <button className='text-[#3B82F6] font-medium'>Like</button>,
-    name: 'Like',
-    icon: <AiFillLike size={20} className="text-[#3B82F6] hover:scale-125 transition duration-300" />
-  },
-  {
-    button: <button className='text-[#EF4444] font-medium'>Love</button>,
-    name: 'Love',
-    icon: <AiFillHeart size={20} className="text-[#EF4444] hover:scale-125 transition duration-300" />
-  },
-  {
-    button: <button className='text-[#EAB308] font-medium'>Haha</button>,
-    name: 'Haha',
-    icon: <BsFillEmojiLaughingFill
-      size={20}
-      className="text-[#EAB308] hover:scale-125 transition duration-300"
-    />
-  },
-  {
-    button: <button className='text-[#A855F7] font-medium'>Sad</button>,
-    name: 'Sad',
-    icon: <FaSadTear size={20} className="text-[#A855F7] hover:scale-125 transition duration-300" />
 
-  },
-  {
-    button: <button className='text-[#F97316] font-medium'>Angry</button>,
-    name: 'Angry',
-    icon: <FaAngry size={20} className="text-[#F97316] hover:scale-125 transition duration-300" />
-  },
-];
-
-// export const commnents = [
-//   {
-//     idUser: 1,
-//     message: "Xin chào",
-//     parent_id: null,
-//     reactions: [
-//       { user_id: 1, name: 'van', type: 1 },
-//       { user_id: 2, name: 'nam', type: 2 }
-//     ]
-
-//   },
-//   {
-//     idUser: 2,
-//     message: "Xin chào 1",
-//     parent_id: 1,
-//     reactions: [
-//       { user_id: 1, name: 'van', type: 1 },
-//       { user_id: 2, name: 'nam', type: 2 }
-//     ]
-//   },
-//   {
-//     idUser: 3,
-//     message: "Xin chào 1",
-//     parent_id: 1,
-//     reactions: [
-//       { user_id: 1, name: 'phap', type: 1 },
-//       { user_id: 2, name: 'van', type: 2 }
-//     ]
-//   },
-//   {
-//     idUser: 4,
-//     message: "Tạm biệt",
-//     parent_id: null,
-//     reactions: [
-//       { user_id: 1, name: 'van', type: 1 },
-//       { user_id: 2, name: 'nam', type: 2 }
-//     ]
-//   }
-// ]
+export const sortBy = ['Latest', 'Popular']

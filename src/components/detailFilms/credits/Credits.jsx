@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import ContentCredits from './ContentCredits'
 
 const Credits = (props) => {
@@ -16,4 +16,4 @@ const Credits = (props) => {
     )
 }
 
-export default Credits
+export default memo(Credits)

@@ -8,10 +8,11 @@ import moment from 'moment'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { UserAuth } from '@/hooks/useAuth'
-import { Timestamp, collection, doc, getDocs, setDoc } from 'firebase/firestore'
+import { Timestamp, collection, doc, getDocs, orderBy, query, setDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { uuid } from 'uuidv4';
 import ListComment from '@/components/watchFilms/ListComment'
+import { sortBy } from '@/constants'
 
 const Watch = ({ detailMovie, season, id, tab }) => {
     const router = useRouter()
@@ -20,21 +21,7 @@ const Watch = ({ detailMovie, season, id, tab }) => {
     const queryEpisode = router.query.episode || 0
     const [comment, setComment] = useState('')
     const [comments, setComments] = useState([])
-
-    useEffect(() => {
-        const getDataComment = async () => {
-            const querySnapshot = await getDocs(collection(db, "comments", id, "comment"))
-            const listComment = []
-            querySnapshot.forEach(doc => {
-                listComment.push({
-                    ...doc.data(),
-                    id: doc.id
-                })
-            })
-            setComments(listComment)
-        }
-        getDataComment()
-    }, [comment])
+    const [tabSortBy, setTabSortBy] = useState('Latest')
 
     const handleWriteComment = async (e, comment) => {
         e.preventDefault()
@@ -52,6 +39,28 @@ const Watch = ({ detailMovie, season, id, tab }) => {
         const docRef = doc(collection(db, "comments", id, "comment"))
         await setDoc(docRef, temp)
     }
+    // season[querySeason].episodes[queryEpisode].vote_average
+
+    const getDataCommentBySortBy = async (sort) => {
+        const collectionComment = collection(db, "comments", id, "comment")
+        const querySnapshotSortByDesc = await getDocs(query(collectionComment, orderBy('createdAt', sort)))
+        const listComment = []
+        querySnapshotSortByDesc.forEach(doc => {
+            listComment.push({
+                ...doc.data(),
+                id: doc.id
+            })
+        })
+        setComments(listComment)
+    }
+
+    useEffect(() => {
+        if (tabSortBy === 'Latest') {
+            getDataCommentBySortBy('desc')
+        } else {
+            getDataCommentBySortBy('asc')
+        }
+    }, [comment, tabSortBy])
 
     return (
         <div className='grid grid-cols-4 pt-6'>
@@ -75,11 +84,16 @@ const Watch = ({ detailMovie, season, id, tab }) => {
                             <div className='flex gap-5 mt-4'>
                                 <div className='flex gap-2 items-center'>
                                     <AiFillStar size={24} className='text-blue' />
-                                    <p className='text-[#989898] text-lg'>{season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].vote_average}</p>
+                                    {/* <p className='text-[#989898] text-lg'>
+                                        {
+                                            season[querySeason].episodes[queryEpisode].vote_average
+                                        }
+                                    </p> */}
+
                                 </div>
                                 <div className='flex gap-2 items-center'>
                                     <AiTwotoneCalendar size={24} className='text-blue' />
-                                    <p className='text-[#989898] text-lg'> {season[querySeason].episodes[queryEpisode] && moment(season[querySeason].episodes[queryEpisode].air_date, 'YYYY-MM-DD').format('YYYY')}</p>
+                                    {/* <p className='text-[#989898] text-lg'> {season[querySeason].episodes[queryEpisode] && moment(season[querySeason].episodes[queryEpisode].air_date, 'YYYY-MM-DD').format('YYYY')}</p> */}
                                 </div>
                             </div>
                             <ul className='flex flex-wrap gap-2 mt-3'>
@@ -98,18 +112,18 @@ const Watch = ({ detailMovie, season, id, tab }) => {
                             </ul>
                         </div>
                         <div>
-                            <h2 className='uppercase text-right italic text-[#d4d4d4] text-xl'>{season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].name}</h2>
+                            {/* <h2 className='uppercase text-right italic text-[#d4d4d4] text-xl'>{season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].name}</h2>
                             <p className='text-right mt-2 text-[#989898] text-lg'>
                                 Season {season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].season_number} - Episode {season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].episode_number}
-                            </p>
+                            </p> */}
                         </div>
                     </div>
                     <div className='text-xl font-medium text-white mt-5'>
                         Overview:
                     </div>
-                    <span className='text-lg mt-1 text-[#989898]'>
+                    {/* <span className='text-lg mt-1 text-[#989898]'>
                         {season[querySeason].episodes[queryEpisode] && season[querySeason].episodes[queryEpisode].overview}
-                    </span>
+                    </span> */}
                 </div>
                 <div className='my-8'>
                     <div className='flex items-center justify-between'>
@@ -118,8 +132,25 @@ const Watch = ({ detailMovie, season, id, tab }) => {
                             <p className='absolute left-28 top-0 bg-[#333335] w-3 h-3 text-sm rounded-full flex justify-center items-center text-white'>2</p>
                         </div>
                         <div className='flex'>
-                            <button className=' border border-[#4b5563] px-3 py-1 rounded-l-xl hover:text-white bg-[#333335] transition duration-300 text-white'>Latest</button>
-                            <button className=' border border-[#4b5563] px-3 py-1 rounded-r-xl hover:text-white bg-[#1C1C1E] transition duration-300 text-[#989898]'>Popular</button>
+                            {
+                                sortBy.map((item, index) => (
+                                    <button key={index}
+                                        className={
+                                            ` border border-[#4b5563] px-3 py-1  hover:text-white 
+                                            transition duration-300 
+                                            ${item === "Latest" ? "rounded-l-xl" : "rounded-r-xl"} 
+                                            ${item === tabSortBy ?
+                                                'text-white bg-[#333335] font-semibold' :
+                                                'text-[#989898]'}`
+                                        }
+                                        onClick={() => {
+                                            setTabSortBy(item)
+                                        }}
+                                    >
+                                        {item}
+                                    </button>
+                                ))
+                            }
                         </div>
                     </div>
                     <div className='px-1'>
@@ -142,13 +173,13 @@ const Watch = ({ detailMovie, season, id, tab }) => {
                             <ul className='mt-5'>
                                 {
                                     comments.map((item, index) => (
-                                        <>
+                                        <div key={index}>
                                             {
                                                 item.parent_id === null &&
-                                                <ListComment key={index} item={item} user={user} id={id} />
+                                                <ListComment key={index} item={item} user={user} id={id} tabSortBy={tabSortBy} getDataCommentBySortBy={(sort) => getDataCommentBySortBy(sort)} />
                                             }
 
-                                        </>
+                                        </div>
                                     ))
                                 }
                             </ul>
@@ -204,15 +235,19 @@ export const getServerSideProps = async (context) => {
 
     let listPromise = [];
     const detailMovie = await apiMovie.getDetailMovie(query)
-    detailMovie.data.seasons.map((season) => {
-        // push promise to array
-        listPromise.push(apiMovie.getSeason(query, season.season_number))
-    })
+    if (detailMovie.data.seasons) {
+
+        detailMovie.data.seasons.map((season) => {
+            // push promise to array
+            listPromise.push(apiMovie.getSeason(query, season.season_number))
+        })
+    }
 
     const listSeason = await Promise.all(listPromise)
     const season = listSeason.map((list) => {
         return list.data
     })
+
 
     return {
         props: {

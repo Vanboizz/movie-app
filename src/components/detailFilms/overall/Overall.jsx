@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import SpokenLanguage from './SpokenLanguage'
 
 const Overall = (props) => {
@@ -27,4 +27,4 @@ const Overall = (props) => {
     )
 }
 
-export default Overall
+export default memo(Overall)

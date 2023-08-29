@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 const Videos = (props) => {
     const { video } = props
+
     return (
         <li >
             <div>
@@ -11,4 +12,4 @@ const Videos = (props) => {
     )
 }
 
-export default Videos
+export default memo(Videos)

@@ -7,7 +7,6 @@ const ContentReviews = (props) => {
     const { review } = props
     const [isSeeMore, setIsSeeMore] = useState(true)
     const createAt = parseDateTime(review)
-
     const toggleSeeMore = (e) => {
         e.preventDefault()
         setIsSeeMore(isSeeMore => !isSeeMore)

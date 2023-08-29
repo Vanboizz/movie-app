@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Episodes from './Episodes'
 import { totalEpisodes, totalSeason } from '@/helpers'
 
@@ -28,4 +28,4 @@ const Seasons = (props) => {
     )
 }
 
-export default Seasons
+export default memo(Seasons)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 const ScoreRated = (props) => {
     const { detailMovie } = props
@@ -29,4 +29,4 @@ const ScoreRated = (props) => {
     )
 }
 
-export default ScoreRated
+export default memo(ScoreRated)

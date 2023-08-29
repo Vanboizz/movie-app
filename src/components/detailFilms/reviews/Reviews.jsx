@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { MdKeyboardArrowDown } from "react-icons/md"
 import ContentReviews from './ContentReviews'
 
@@ -33,4 +33,4 @@ const Reviews = (props) => {
     )
 }
 
-export default Reviews
+export default memo(Reviews)
