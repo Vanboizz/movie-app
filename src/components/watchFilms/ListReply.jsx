@@ -2,59 +2,25 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { BiDotsHorizontalRounded, BiSolidSend } from "react-icons/bi"
 import moment from 'moment'
-import {
-    AiFillLike,
-    AiFillHeart
-} from 'react-icons/ai';
-import { BsFillEmojiLaughingFill } from 'react-icons/bs';
-import { FaSadTear, FaAngry } from 'react-icons/fa';
-import { Timestamp, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { Timestamp, collection, deleteField, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { UserAuth } from '@/hooks/useAuth';
 import ModalConfirmDeleteReply from '@/components/base/modal/ModalConfirmDeleteReply';
 import useOnKeyPress from '@/hooks/useOnKeyPress';
-
-const listReaction = [
-    {
-        button: <button className='text-[#5179FF] font-medium'>Like</button>,
-        name: 'Like',
-        icon: <AiFillLike size={20} className="text-[#5179FF] hover:scale-125 transition duration-300" />
-    },
-    {
-        button: <button className='text-[#EF4444] font-medium'>Love</button>,
-        name: 'Love',
-        icon: <AiFillHeart size={20} className="text-[#EF4444] hover:scale-125 transition duration-300" />
-    },
-    {
-        button: <button className='text-[#EAB308] font-medium'>Haha</button>,
-        name: 'Haha',
-        icon: <BsFillEmojiLaughingFill
-            size={20}
-            className="text-[#EAB308] hover:scale-125 transition duration-300"
-        />
-    },
-    {
-        button: <button className='text-[#A855F7] font-medium'>Sad</button>,
-        name: 'Sad',
-        icon: <FaSadTear size={20} className="text-[#A855F7] hover:scale-125 transition duration-300" />
-
-    },
-    {
-        button: <button className='text-[#F97316] font-medium'>Angry</button>,
-        name: 'Angry',
-        icon: <FaAngry size={20} className="text-[#F97316] hover:scale-125 transition duration-300" />
-    },
-];
+import ModalListReact from '../base/modal/ModalListReact';
 
 const ListReply = (props) => {
-    const { item, id, getReplyBySortBy } = props
+    const { reply, item, id, getReplyBySortBy, listReaction } = props
     const [hidenDots, setHidenDots] = useState(false)
-    const timeago = moment(item.createdAt.toDate()).fromNow()
+    const timeago = moment(reply.createdAt.toDate()).fromNow()
     const [typeReaction, setTypeReaction] = useState(null)
+    const [hiddenComment, setHiddenComment] = useState(false)
     const { user } = UserAuth()
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [change, setChange] = useState(false)
-    const [inputReply, setInputReply] = useState(item.reply)
+    const [inputReply, setInputReply] = useState(reply.reply)
+    const [showList, setShowList] = useState(false)
+
 
     const handleHidenDots = () => {
         if (!hidenDots) {
@@ -67,10 +33,21 @@ const ListReply = (props) => {
         setIsOpenModal(true)
     }
 
+    const handleHidenComment = () => {
+        if (!hiddenComment) {
+            setHiddenComment(true)
+        }
+        else setHiddenComment(false)
+    }
+
+    const showListReact = () => {
+        setShowList(true)
+    }
+
     useOnKeyPress(() => { setChange(false) }, "Escape")
 
     const getReactions = async () => {
-        const docRef = doc(db, "comments", id, "comment", item.id)
+        const docRef = doc(db, "comments", id, "comment", reply.id)
         const docSnap = await getDoc(docRef)
         if (docSnap.exists()) {
             if (docSnap.data().reaction && docSnap.data().reaction[user.uid]) {
@@ -88,11 +65,12 @@ const ListReply = (props) => {
 
     const handleReaction = async (reaction) => {
         setTypeReaction(reaction.name)
-        const docRef = doc(collection(db, "comments", id, "comment"), item.id)
+        const docRef = doc(collection(db, "comments", id, "comment"), reply.id)
 
         const temp = {
             idUser: user.uid,
             name: user.displayName,
+            avt: user.photoURL,
             type: reaction.name
         }
 
@@ -110,7 +88,7 @@ const ListReply = (props) => {
 
     const handleOnSubmitUpdate = (e) => {
         e.preventDefault()
-        const replyDocRef = doc(db, "comments", id, "comment", item.id)
+        const replyDocRef = doc(db, "comments", id, "comment", reply.id)
         updateDoc(replyDocRef, {
             "reply": inputReply,
             "updateAt": Timestamp.fromDate(new Date())
@@ -122,12 +100,26 @@ const ListReply = (props) => {
             .catch(error => console.log(error))
     }
 
+    const handleDeleteReact = async () => {
+        const docRef = doc(db, "comments", id, "comment", reply.id)
+        const updateData = {};
+        updateData[`reaction.${user.uid}`] = deleteField();
+
+        try {
+            await updateDoc(docRef, updateData)
+        } catch (error) {
+            console.error('Error deleting field:', error);
+        }
+    }
+
+    console.log(reply.reaction, typeReaction);
+
     return (
         <>
             <li className='flex gap-3 items-start py-2'>
                 <Image
                     className="rounded-full w-10 h-10 shrink-0 object-cover"
-                    src={item.photoURL}
+                    src={reply.photoURL}
 
                     width={200}
                     height={28}
@@ -135,10 +127,10 @@ const ListReply = (props) => {
                 />
                 <div>
                     <div className='bg-[#333335] px-4 py-2 rounded-2xl relative inline-block'>
-                        <p className='text-white font-medium'>{item.displayName}</p>
+                        <p className='text-white font-medium'>{reply.displayName}</p>
                         {
                             !change ?
-                                <p className='text-lg mt-1 text-[#989898]'>{item.reply}</p> :
+                                <p className='text-lg mt-1 text-[#989898]'>{reply.reply}</p> :
                                 <>
                                     <form action="" className='flex gap-2 items-center' onSubmit={(e) => handleOnSubmitUpdate(e)}>
                                         <input
@@ -153,6 +145,38 @@ const ListReply = (props) => {
                                     <p className='mt-1 text-sm text-[#989898]'>Press Esc to cancel</p>
                                 </>
                         }
+                        <button className='absolute bg-[#333335] -right-10 -bottom-3 rounded-full shadow-md px-1 py-1/2 hover:brightness-90 transition duration-300' onClick={showListReact}>
+                            <div className='flex'>
+                                {
+                                    reply.reaction && Object.keys(Object.values(reply.reaction).reduce((prev, curr) => {
+                                        if (prev[curr["type"]] === undefined) {
+                                            return { ...prev, [curr["type"]]: 1 }
+                                        } else {
+                                            return { ...prev, [curr["type"]]: prev[curr["type"]] + 1 }
+                                        }
+                                    }, {}))
+                                        .map((value, index) => {
+                                            switch (value) {
+                                                case "Like":
+                                                    return <div key={index}>{listReaction[0]["icon"]}</div>
+                                                case "Love":
+                                                    return <div key={index}>{listReaction[1]["icon"]}</div>
+                                                case "Haha":
+                                                    return <div key={index}>{listReaction[2]["icon"]}</div>
+                                                case "Sad":
+                                                    return <div key={index}>{listReaction[3]["icon"]}</div>
+                                                case "Angry":
+                                                    return <div key={index}>{listReaction[4]["icon"]}</div>
+                                                default:
+                                                    break;
+                                            }
+                                        })
+                                }
+                                <p className='text-sm text-[#989898] font-semibold'>{
+                                    reply.reaction && Object.values(reply.reaction).length > 0 ? Object.values(reply.reaction).length : null
+                                }</p>
+                            </div>
+                        </button>
                     </div>
                     <div className='flex gap-3 mt-3 items-center'>
                         <div className='relative group'>
@@ -161,7 +185,7 @@ const ListReply = (props) => {
                             }
                             {
                                 listReaction.map((reaction, index) => (
-                                    <div key={index}>
+                                    <div key={index} onClick={handleDeleteReact}>
                                         {reaction.name === typeReaction ? reaction.button : null}
                                     </div>
                                 ))
@@ -190,8 +214,17 @@ const ListReply = (props) => {
                     {
                         hidenDots ?
                             <div className=' bg-[#49494B] flex flex-col gap-1 rounded-md px-3 py-2 shadow-md'>
-                                <button className='text-[#989898] transition duration-300 hover:text-white text-left' onClick={handleEdit}>Edit</button>
-                                <button onClick={handleDelete} className='text-[#989898] transition duration-300 hover:text-white text-left'>Delete</button>
+                                {
+                                    // user.uid, reply.idUser
+                                    // reply.parent_id === item.idComments
+                                    user.uid === reply.idUser ?
+                                        <>
+                                            <button className='text-[#989898] transition duration-300 hover:text-white text-left' onClick={handleEdit}>Edit</button>
+                                            <button onClick={handleDelete} className='text-[#989898] transition duration-300 hover:text-white text-left'>Delete</button>
+                                        </>
+                                        :
+                                        <button className='text-[#989898] transition duration-300 hover:text-white text-left' onClick={handleHidenComment} >Hidden</button>
+                                }
                             </div>
                             : null
                     }
@@ -201,9 +234,12 @@ const ListReply = (props) => {
                 <ModalConfirmDeleteReply
                     setIsOpenModal={setIsOpenModal}
                     id={id}
-                    item={item}
+                    reply={reply}
                     getReplyBySortBy={getReplyBySortBy}
                 />}
+            {
+                showList && <ModalListReact reply={reply} listReaction={listReaction} setShowList={setShowList} />
+            }
         </>
     )
 }

@@ -4,7 +4,7 @@ import React from 'react'
 import { AiOutlineDelete } from "react-icons/ai"
 
 const ModalConfirmDeleteComment = (props) => {
-    const { setIsOpenModal, id, item, getDataCommentBySortBy, getReplyBySortBy } = props
+    const { setIsOpenModal, setHidenDots, id, item, getDataCommentBySortBy, getReplyBySortBy } = props
 
     const handleCloseModal = () => {
         setIsOpenModal(false)
@@ -30,7 +30,8 @@ const ModalConfirmDeleteComment = (props) => {
         deleteDoc(doc(db, "comments", id, "comment", item.id))
             .then(() => {
                 getDataCommentBySortBy()
-                setIsOpenModal(true)
+                setIsOpenModal(false)
+                setHidenDots(false)
             })
             .catch((error) => console.log(error))
 

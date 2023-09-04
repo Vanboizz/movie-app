@@ -46,6 +46,11 @@ const apiMovie = {
     const url = `/3/${tab}/${id}/season/${seasonNumber}?api_key=${process.env.customKey}`;
     return axiosClient.get(url);
   },
+  getRecommendation: async (query) => {
+    const { tab = queryMovieDefault.type, id } = query
+    const url = `/3/${tab}/${id}/recommendations?api_key=${process.env.customKey}`
+    return axiosClient.get(url)
+  }
 };
 
 export default apiMovie;

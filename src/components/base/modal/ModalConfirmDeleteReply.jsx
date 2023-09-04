@@ -4,14 +4,14 @@ import React from 'react'
 import { AiOutlineDelete } from "react-icons/ai"
 
 const ModalConfirmDeleteReply = (props) => {
-    const { setIsOpenModal, id, item, getReplyBySortBy } = props
+    const { setIsOpenModal, id, reply, getReplyBySortBy } = props
 
     const handleCloseModal = () => {
         setIsOpenModal(false)
     }
 
     const handleConfirmDeleteReply = () => {
-        const docRef = doc(db, "comments", id, "comment", item.id)
+        const docRef = doc(db, "comments", id, "comment", reply.id)
         deleteDoc(docRef)
             .then(() => {
                 setIsOpenModal(true)
