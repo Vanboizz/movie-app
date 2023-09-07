@@ -140,7 +140,7 @@ const Watch = ({ detailMovie, recommendation, season, id, tab }) => {
                     <div className='flex items-center justify-between'>
                         <div className='relative '>
                             <p className='text-2xl text-white font-medium'>Comments</p>
-                            <p className='absolute left-28 top-0 bg-[#333335] w-3 h-3 text-sm rounded-full flex justify-center items-center text-white'>2</p>
+                            <p className='absolute left-28 top-0 bg-[#333335] w-3 h-3 text-sm rounded-full flex justify-center items-center text-white'>{comments.length}</p>
                         </div>
                         <div className='flex'>
                             {
