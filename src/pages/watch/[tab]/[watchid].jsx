@@ -8,7 +8,7 @@ import moment from 'moment'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { UserAuth } from '@/hooks/useAuth'
-import { Timestamp, collection, doc, getDocs, orderBy, query, setDoc, where } from 'firebase/firestore'
+import { Timestamp, collection, doc, getDocs, orderBy, query, setDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import { uuid } from 'uuidv4';
 import ListComment from '@/components/watchFilms/ListComment'
@@ -23,6 +23,7 @@ const Watch = ({ detailMovie, recommendation, season, id, tab }) => {
     const [comment, setComment] = useState('')
     const [comments, setComments] = useState([])
     const [tabSortBy, setTabSortBy] = useState('Latest')
+
     const handleWriteComment = async (e, comment) => {
         e.preventDefault()
         setComment("")
@@ -41,8 +42,9 @@ const Watch = ({ detailMovie, recommendation, season, id, tab }) => {
     }
 
     const getDataCommentBySortBy = async (sort) => {
+        let sortBy = sort ? sort : tabSortBy === 'Latest' ? 'desc' : 'asc'
         const collectionComment = collection(db, "comments", id, "comment")
-        const q = query(collectionComment, orderBy('createdAt', sort))
+        const q = query(collectionComment, orderBy('createdAt', sortBy))
         const querySnapshotSortByDesc = await getDocs(q)
         const listComment = []
         querySnapshotSortByDesc.forEach(doc => {
@@ -281,3 +283,4 @@ export const getServerSideProps = async (context) => {
         }
     }
 }
+

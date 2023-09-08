@@ -1,10 +1,9 @@
-// import { listReaction } from '@/constants'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { BiDotsHorizontalRounded, BiSolidSend } from "react-icons/bi"
 import moment from 'moment'
 import { uuid } from 'uuidv4';
-import { Timestamp, collection, deleteField, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { Timestamp, collection, deleteField, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { db } from '@/firebase'
 import ListReply from './ListReply'
 import {
@@ -62,6 +61,7 @@ const ListComment = (props) => {
     const [inputComment, setInputComment] = useState(item.comment)
     const [change, setChange] = useState(false)
     const [showList, setShowList] = useState(false)
+    const [reactionValues, setReactionValues] = useState([])
 
     const handleDelete = () => {
         setIsOpenModal(true)
@@ -86,6 +86,7 @@ const ListComment = (props) => {
     }
 
     const showListReact = () => {
+        getDataCommentBySortBy()
         setShowList(true)
     }
 
@@ -133,9 +134,11 @@ const ListComment = (props) => {
 
         await setDoc(docRef, {
             reaction: {
+                ...item.reaction,
                 [temp.idUser]: temp
             }
         }, { merge: true })
+        getReactions()
     }
 
     const handleOnSubmitUpdate = (e) => {
@@ -176,6 +179,7 @@ const ListComment = (props) => {
 
         try {
             await updateDoc(docRef, updateData)
+            getDataCommentBySortBy()
         } catch (error) {
             console.error('Error deleting field:', error);
         }
@@ -186,9 +190,16 @@ const ListComment = (props) => {
         const docSnap = await getDoc(docRef)
         if (docSnap.exists()) {
             const userReaction = docSnap.data().reaction && docSnap.data().reaction[user.uid]
-            if (userReaction) {
-                setTypeReaction(userReaction.type)
-            }
+            setTypeReaction(userReaction?.type ?? null)
+            const allReactions = docSnap.data().reaction || {};
+            const reactionValues = Object.keys(Object.values(allReactions).reduce((prev, curr) => {
+                if (prev[curr["type"]] === undefined) {
+                    return { ...prev, [curr["type"]]: 1 }
+                } else {
+                    return { ...prev, [curr["type"]]: prev[curr["type"]] + 1 }
+                }
+            }, {}))
+            setReactionValues(reactionValues);
         }
         else {
             console.log("No such document!");
@@ -196,9 +207,13 @@ const ListComment = (props) => {
     }
 
     useEffect(() => {
+        setInputComment(item.comment)
+    }, [item])
+
+    useEffect(() => {
         getReplyBySortBy()
         getReactions()
-    }, [reply])
+    }, [reply, item])
 
     return (
         <>
@@ -235,42 +250,26 @@ const ListComment = (props) => {
                                 <button className='absolute bg-[#333335] -right-10 -bottom-3 rounded-full shadow-md px-1 py-1/2 hover:brightness-90 transition duration-300' onClick={showListReact}>
                                     <div className='flex'>
                                         {
-                                            item.reaction && Object.keys(Object.values(item.reaction).reduce((prev, curr) => {
-                                                if (prev[curr["type"]] === undefined) {
-                                                    return { ...prev, [curr["type"]]: 1 }
-                                                } else {
-                                                    return { ...prev, [curr["type"]]: prev[curr["type"]] + 1 }
-                                                }
-                                            }, {})).map((value, index) => {
-                                                switch (value) {
-                                                    case "Like":
-                                                        return <div key={index}>{listReaction[0]["icon"]}</div>
-                                                    case "Love":
-                                                        return <div key={index}>{listReaction[1]["icon"]}</div>
-                                                    case "Haha":
-                                                        return <div key={index}>{listReaction[2]["icon"]}</div>
-                                                    case "Sad":
-                                                        return <div key={index}>{listReaction[3]["icon"]}</div>
-                                                    case "Angry":
-                                                        return <div key={index}>{listReaction[4]["icon"]}</div>
-                                                    default:
-                                                        break;
-                                                }
-                                            })
+                                            reactionValues.map((value, index) => (
+                                                <div key={index}>{listReaction.find(reaction => reaction.name === value).icon}</div>
+                                            ))
                                         }
-                                        <p className='text-sm text-[#989898] font-semibold'>{
-                                            item.reaction && Object.values(item.reaction).length > 0 ? Object.values(item.reaction).length : null
-                                        }</p>
+                                        <p className='text-sm text-[#989898] font-semibold'>
+                                            {
+                                                item.reaction &&
+                                                    Object.values(item.reaction).length > 0 ? Object.values(item.reaction).length : null
+                                            }
+                                        </p>
                                     </div>
                                 </button>
                             </div>
                             <div className='flex gap-3 mt-3 items-center'>
                                 <div className='relative group'>
                                     {
-                                        typeReaction === null && <button className='text-[#989898]'>Reaction</button>
+                                        !typeReaction && <button className='text-[#989898]'>Reaction</button>
                                     }
                                     {
-                                        listReaction.map((reaction, index) => (
+                                        typeReaction && listReaction.map((reaction, index) => (
                                             <div key={index} onClick={handleDeleteReact}>
                                                 {reaction.name === typeReaction ? reaction.button : null}
                                             </div>
@@ -281,7 +280,9 @@ const ListComment = (props) => {
                                             listReaction.map((reaction, index) => (
                                                 <button
                                                     key={index}
-                                                    onClick={() => handleReaction(reaction)}
+                                                    onClick={() => {
+                                                        handleReaction(reaction)
+                                                    }}
                                                 >
                                                     {reaction.icon}
                                                 </button>

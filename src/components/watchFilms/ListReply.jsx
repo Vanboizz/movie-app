@@ -20,7 +20,7 @@ const ListReply = (props) => {
     const [change, setChange] = useState(false)
     const [inputReply, setInputReply] = useState(reply.reply)
     const [showList, setShowList] = useState(false)
-
+    const [reactionValues, setReactionValues] = useState([])
 
     const handleHidenDots = () => {
         if (!hidenDots) {
@@ -33,6 +33,11 @@ const ListReply = (props) => {
         setIsOpenModal(true)
     }
 
+    const handleEdit = () => {
+        setChange(true)
+        setHidenDots(false)
+    }
+
     const handleHidenReply = () => {
         if (!hiddenReply) {
             setHiddenReply(true)
@@ -41,27 +46,11 @@ const ListReply = (props) => {
     }
 
     const showListReact = () => {
+        getReplyBySortBy()
         setShowList(true)
     }
 
     useOnKeyPress(() => { setChange(false) }, "Escape")
-
-    const getReactions = async () => {
-        const docRef = doc(db, "comments", id, "comment", reply.id)
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()) {
-            if (docSnap.data().reaction && docSnap.data().reaction[user.uid]) {
-                setTypeReaction(docSnap.data().reaction[user.uid].type)
-            }
-        }
-        else {
-            console.log("No such document!");
-        }
-    }
-
-    useEffect(() => {
-        getReactions()
-    }, [])
 
     const handleReaction = async (reaction) => {
         setTypeReaction(reaction.name)
@@ -79,11 +68,28 @@ const ListReply = (props) => {
                 [temp.idUser]: temp
             }
         }, { merge: true })
+        getReactions()
     }
 
-    const handleEdit = () => {
-        setChange(true)
-        setHidenDots(false)
+    const getReactions = async () => {
+        const docRef = doc(db, "comments", id, "comment", reply.id)
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()) {
+            const userReaction = docSnap.data().reaction && docSnap.data().reaction[user.uid]
+            setTypeReaction(userReaction?.type ?? null)
+            const allReactions = docSnap.data().reaction || {};
+            const reactionValues = Object.keys(Object.values(allReactions).reduce((prev, curr) => {
+                if (prev[curr["type"]] === undefined) {
+                    return { ...prev, [curr["type"]]: 1 }
+                } else {
+                    return { ...prev, [curr["type"]]: prev[curr["type"]] + 1 }
+                }
+            }, {}))
+            setReactionValues(reactionValues);
+        }
+        else {
+            console.log("No such document!");
+        }
     }
 
     const handleOnSubmitUpdate = (e) => {
@@ -107,10 +113,17 @@ const ListReply = (props) => {
 
         try {
             await updateDoc(docRef, updateData)
+            getReplyBySortBy()
         } catch (error) {
             console.error('Error deleting field:', error);
         }
     }
+
+    useEffect(() => {
+        setInputReply(reply.reply)
+        getReactions()
+    }, [reply])
+
 
     return (
         <>
@@ -148,33 +161,15 @@ const ListReply = (props) => {
                                 <button className='absolute bg-[#333335] -right-10 -bottom-3 rounded-full shadow-md px-1 py-1/2 hover:brightness-90 transition duration-300' onClick={showListReact}>
                                     <div className='flex'>
                                         {
-                                            reply.reaction && Object.keys(Object.values(reply.reaction).reduce((prev, curr) => {
-                                                if (prev[curr["type"]] === undefined) {
-                                                    return { ...prev, [curr["type"]]: 1 }
-                                                } else {
-                                                    return { ...prev, [curr["type"]]: prev[curr["type"]] + 1 }
-                                                }
-                                            }, {}))
-                                                .map((value, index) => {
-                                                    switch (value) {
-                                                        case "Like":
-                                                            return <div key={index}>{listReaction[0]["icon"]}</div>
-                                                        case "Love":
-                                                            return <div key={index}>{listReaction[1]["icon"]}</div>
-                                                        case "Haha":
-                                                            return <div key={index}>{listReaction[2]["icon"]}</div>
-                                                        case "Sad":
-                                                            return <div key={index}>{listReaction[3]["icon"]}</div>
-                                                        case "Angry":
-                                                            return <div key={index}>{listReaction[4]["icon"]}</div>
-                                                        default:
-                                                            break;
-                                                    }
-                                                })
+                                            reactionValues.map((value, index) => (
+                                                <div key={index}>{listReaction.find(reaction => reaction.name === value).icon}</div>
+                                            ))
                                         }
-                                        <p className='text-sm text-[#989898] font-semibold'>{
-                                            reply.reaction && Object.values(reply.reaction).length > 0 ? Object.values(reply.reaction).length : null
-                                        }</p>
+                                        <p className='text-sm text-[#989898] font-semibold'>
+                                            {
+                                                reply.reaction && Object.values(reply.reaction).length > 0 ? Object.values(reply.reaction).length : null
+                                            }
+                                        </p>
                                     </div>
                                 </button>
                             </div>
